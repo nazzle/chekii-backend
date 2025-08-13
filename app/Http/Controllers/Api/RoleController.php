@@ -92,4 +92,40 @@ class RoleController extends Controller
             'message' => 'Role permissions updated successfully'
         ]);
     }
+
+    // Delete role by changing active state to false
+    public function deleteRole(Request $request, $id)
+    {
+        $user = $request->user();
+        if (!$user->hasPermission('ASSIGN_ROLES')) {
+            return response()->json(['message' => 'Access denied'], 403);
+        }
+
+        $role = Role::find($id);
+        if (!$role) {
+            return response()->json(['message' => 'Role not found'], 404);
+        }
+
+        // Prevent deletion of admin role
+        if ($role->name === 'admin') {
+            return response()->json(['message' => 'Cannot delete admin role'], 400);
+        }
+
+        // Check if role is assigned to any users
+        if ($role->users()->count() > 0) {
+            return response()->json(['message' => 'Cannot delete role that is assigned to users'], 400);
+        }
+
+        // Change active state to false instead of hard delete
+        $role->update(['active' => ! $role->active]);
+
+        $status = $role->active ? 'activated' : 'deactivated';
+
+        return response()->json([
+            'role' => $role,
+            'code' => 200,
+            'status' => true,
+            'message' => "Role ${status} successfully"
+        ]);
+    }
 }

@@ -33,7 +33,7 @@ class AuthController extends Controller
         $token = $user->createToken('api');
 
         //  Setting expiry time
-        $token->accessToken->expires_at = now()->addMinutes(7);
+        $token->accessToken->expires_at = now()->addMinutes(59);
         $token->accessToken->save();
 
         //  Getting token

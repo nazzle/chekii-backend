@@ -52,6 +52,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/roles', [RoleController::class, 'saveNewRole']);
     Route::get('/permissions', [RoleController::class, 'getListOfPermissions']);
     Route::put('/roles/{id}/permissions', [RoleController::class, 'updateRolePermissions']);
+    Route::patch('/roles/{id}/delete', [RoleController::class, 'deleteRole']);
 });
 
 Route::post('/reauth', function (Request $request) {
@@ -66,7 +67,7 @@ Route::post('/reauth', function (Request $request) {
 
     // Generate and return new token
     $token = $user->createToken('api');
-    $token->accessToken->expires_at = now()->addMinutes(7);
+    $token->accessToken->expires_at = now()->addMinutes(59);
     $token->accessToken->save();
 
     $plainTextToken = $token->plainTextToken;
