@@ -238,4 +238,20 @@ class UserController extends Controller
             'code' => 200,
         ]);
     }
+
+    // Get logged-in user profile details
+    public function getUserProfile(Request $request)
+    {
+        $user = $request->user();
+        
+        // Load user with roles and employee details
+        $user->load(['roles', 'employee']);
+        
+        return response()->json([
+            'user' => $user,
+            'code' => 200,
+            'status' => true,
+            'message' => 'User profile retrieved successfully'
+        ]);
+    }
 }

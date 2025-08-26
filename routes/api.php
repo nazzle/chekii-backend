@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\ItemController;
+use App\Http\Controllers\Api\SupplierController;
 use App\Models\User;
 use Illuminate\Support\Str;
 
@@ -47,12 +49,25 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/roles', [UserController::class, 'getAvailableRoles']);
     Route::get('/roles/paginated', [UserController::class, 'getPaginatedListOfRoles']);
     Route::get('/roles/all', [UserController::class, 'getNonPaginatedListOfRoles']);
+    Route::get('/profile', [UserController::class, 'getUserProfile']);
 
     // Role and Permission Management
     Route::post('/roles', [RoleController::class, 'saveNewRole']);
     Route::get('/permissions', [RoleController::class, 'getListOfPermissions']);
     Route::put('/roles/{id}/permissions', [RoleController::class, 'updateRolePermissions']);
     Route::patch('/roles/{id}/delete', [RoleController::class, 'deleteRole']);
+
+    // Item and Inventory Management
+    Route::post('/items', [ItemController::class, 'addItem']);
+    Route::post('/inventories', [ItemController::class, 'addInventory']);
+
+    // Supplier Management
+    Route::post('/suppliers', [SupplierController::class, 'createSupplier']);
+    Route::get('/suppliers', [SupplierController::class, 'getPaginatedSuppliers']);
+    Route::get('/suppliers/all', [SupplierController::class, 'getAllSuppliers']);
+    Route::get('/suppliers/{id}', [SupplierController::class, 'getSupplierById']);
+    Route::put('/suppliers/{id}', [SupplierController::class, 'updateSupplier']);
+    Route::patch('/suppliers/{id}/delete', [SupplierController::class, 'deleteSupplier']);
 });
 
 Route::post('/reauth', function (Request $request) {

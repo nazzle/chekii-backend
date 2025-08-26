@@ -54,6 +54,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the employee associated with this user.
+     */
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class, 'employee_id');
+    }
+
+    /**
      * Check if the user has a specific role.
      */
     public function hasRole($role)
