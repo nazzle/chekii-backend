@@ -22,6 +22,8 @@ return new class extends Migration
             $table->decimal('selling_price', 10, 2);
             $table->enum('gender', ['male', 'female', 'unisex'])->nullable();
             $table->string('age')->nullable();
+            $table->unsignedBigInteger('category_id');
+            $table->foreign('category_id')->references('id')->on('categories');
             $table->timestamps();
         });
     }

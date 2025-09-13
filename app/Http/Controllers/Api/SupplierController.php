@@ -151,13 +151,14 @@ class SupplierController extends Controller
         }
 
         // Change active state to false instead of hard delete
-        $supplier->update(['active' => false]);
+        $supplier->update(['active' => ! $supplier->active]);
+        $status = $supplier->active ? 'activated' : 'deactivated';
 
         return response()->json([
             'supplier' => $supplier,
             'code' => 200,
             'status' => true,
-            'message' => 'Supplier deactivated successfully'
+            'message' => "Supplier record {$status} successfully"
         ]);
     }
 }
