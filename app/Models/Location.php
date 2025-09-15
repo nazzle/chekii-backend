@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Item extends Model
+class Location extends Model
 {
     use HasFactory;
 
@@ -16,14 +16,9 @@ class Item extends Model
      */
     protected $fillable = [
         'active',
-        'barcode',
-        'item_code',
+        'name',
+        'code',
         'description',
-        'buying_price',
-        'selling_price',
-        'gender',
-        'age',
-        'category_id',
     ];
 
     /**
@@ -33,28 +28,18 @@ class Item extends Model
      */
     protected $casts = [
         'active' => 'boolean',
-        'buying_price' => 'decimal:2',
-        'selling_price' => 'decimal:2',
     ];
 
     /**
-     * Get the inventory for this item.
+     * Get the inventories for this location.
      */
-    public function inventory()
+    public function inventories()
     {
-        return $this->hasOne(Inventory::class);
+        return $this->hasMany(Inventory::class);
     }
 
     /**
-     * Get the category that owns this item.
-     */
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
-    }
-
-    /**
-     * Get the movements for this item.
+     * Get the movements for this location.
      */
     public function movements()
     {

@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Inventory extends Model
+class Movement extends Model
 {
     use HasFactory;
 
@@ -17,10 +17,11 @@ class Inventory extends Model
     protected $fillable = [
         'active',
         'item_id',
-        'quantity',
-        'reorder_level',
         'location_id',
-        'supplier_id',
+        'movement_type',
+        'quantity',
+        'reference',
+        'notes',
     ];
 
     /**
@@ -31,11 +32,10 @@ class Inventory extends Model
     protected $casts = [
         'active' => 'boolean',
         'quantity' => 'integer',
-        'reorder_level' => 'integer',
     ];
 
     /**
-     * Get the item that owns this inventory.
+     * Get the item that owns this movement.
      */
     public function item()
     {
@@ -43,18 +43,10 @@ class Inventory extends Model
     }
 
     /**
-     * Get the location that owns this inventory.
+     * Get the location that owns this movement.
      */
     public function location()
     {
         return $this->belongsTo(Location::class);
-    }
-
-    /**
-     * Get the supplier that owns this inventory.
-     */
-    public function supplier()
-    {
-        return $this->belongsTo(Supplier::class);
     }
 }

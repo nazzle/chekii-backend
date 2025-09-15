@@ -8,6 +8,10 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\ItemController;
 use App\Http\Controllers\Api\SupplierController;
+use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\LocationController;
+use App\Http\Controllers\Api\MovementController;
+use App\Http\Controllers\Api\InventoryController;
 use App\Models\User;
 use Illuminate\Support\Str;
 
@@ -58,8 +62,44 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/roles/{id}/delete', [RoleController::class, 'deleteRole']);
 
     // Item and Inventory Management
-    Route::post('/items', [ItemController::class, 'addItem']);
-    Route::post('/inventories', [ItemController::class, 'addInventory']);
+    Route::post('/items', [ItemController::class, 'createItem']);
+    Route::get('/items', [ItemController::class, 'getPaginatedItems']);
+    Route::get('/items/all', [ItemController::class, 'getAllItems']);
+    Route::get('/items/{id}', [ItemController::class, 'getItemById']);
+    Route::put('/items/{id}', [ItemController::class, 'updateItem']);
+    Route::patch('/items/{id}/delete', [ItemController::class, 'deleteItem']);
+
+    // Inventory Management
+    Route::post('/inventories', [InventoryController::class, 'createInventory']);
+    Route::get('/inventories', [InventoryController::class, 'getPaginatedInventories']);
+    Route::get('/inventories/all', [InventoryController::class, 'getAllInventories']);
+    Route::get('/inventories/{id}', [InventoryController::class, 'getInventoryById']);
+    Route::put('/inventories/{id}', [InventoryController::class, 'updateInventory']);
+    Route::patch('/inventories/{id}/delete', [InventoryController::class, 'deleteInventory']);
+
+    // Category Management
+    Route::post('/categories', [CategoryController::class, 'createCategory']);
+    Route::get('/categories', [CategoryController::class, 'getPaginatedCategories']);
+    Route::get('/categories/all', [CategoryController::class, 'getAllCategories']);
+    Route::get('/categories/{id}', [CategoryController::class, 'getCategoryById']);
+    Route::put('/categories/{id}', [CategoryController::class, 'updateCategory']);
+    Route::patch('/categories/{id}/delete', [CategoryController::class, 'deleteCategory']);
+
+    // Location Management
+    Route::post('/locations', [LocationController::class, 'createLocation']);
+    Route::get('/locations', [LocationController::class, 'getPaginatedLocations']);
+    Route::get('/locations/all', [LocationController::class, 'getAllLocations']);
+    Route::get('/locations/{id}', [LocationController::class, 'getLocationById']);
+    Route::put('/locations/{id}', [LocationController::class, 'updateLocation']);
+    Route::patch('/locations/{id}/delete', [LocationController::class, 'deleteLocation']);
+
+    // Movement Management
+    Route::post('/movements', [MovementController::class, 'createMovement']);
+    Route::get('/movements', [MovementController::class, 'getPaginatedMovements']);
+    Route::get('/movements/all', [MovementController::class, 'getAllMovements']);
+    Route::get('/movements/{id}', [MovementController::class, 'getMovementById']);
+    Route::put('/movements/{id}', [MovementController::class, 'updateMovement']);
+    Route::patch('/movements/{id}/delete', [MovementController::class, 'deleteMovement']);
 
     // Supplier Management
     Route::post('/suppliers', [SupplierController::class, 'createSupplier']);
