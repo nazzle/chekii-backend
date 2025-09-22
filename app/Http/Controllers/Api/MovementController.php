@@ -21,7 +21,8 @@ class MovementController extends Controller
 
         $validator = Validator::make($request->all(), [
             'item_id' => 'required|exists:items,id',
-            'location_id' => 'required|exists:locations,id',
+            'from_location' => 'required|exists:locations,id',
+            'to_location' => 'required|exists:locations,id',
             'movement_type' => 'required|in:in,out,transfer',
             'quantity' => 'required|integer|min:1',
             'reference' => 'nullable|string|max:255',
@@ -35,7 +36,8 @@ class MovementController extends Controller
         $movement = Movement::create([
             'active' => true,
             'item_id' => $request->item_id,
-            'location_id' => $request->location_id,
+            'from_location' => $request->from_location,
+            'to_location' => $request->to_location,
             'movement_type' => $request->movement_type,
             'quantity' => $request->quantity,
             'reference' => $request->reference,
@@ -123,7 +125,8 @@ class MovementController extends Controller
 
         $validator = Validator::make($request->all(), [
             'item_id' => 'sometimes|required|exists:items,id',
-            'location_id' => 'sometimes|required|exists:locations,id',
+            'from_location' => 'required|exists:locations,id',
+            'to_location' => 'required|exists:locations,id',
             'movement_type' => 'sometimes|required|in:in,out,transfer',
             'quantity' => 'sometimes|required|integer|min:1',
             'reference' => 'nullable|string|max:255',

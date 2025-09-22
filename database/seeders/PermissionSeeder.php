@@ -117,11 +117,11 @@ class PermissionSeeder extends Seeder
             'UPDATE_EMPLOYEE_DETAILS',
             'DELETE_EMPLOYEE_DETAILS',
 
-            // Categories
-            'VIEW_CATEGORIES',
-            'CREATE_CATEGORIES',
-            'UPDATE_CATEGORIES',
-            'DELETE_CATEGORIES',
+            // Items
+            'VIEW_ITEMS',
+            'CREATE_ITEMS',
+            'UPDATE_ITEMS',
+            'DELETE_ITEMS',
 
             // Locations
             'VIEW_LOCATIONS',

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('movements', function (Blueprint $table) {
             $table->id();
+            $table->boolean('active')->default(true);
             $table->unsignedBigInteger('item_id');
             $table->foreign('item_id')->references('id')->on('items');
             $table->unsignedBigInteger('from_location');

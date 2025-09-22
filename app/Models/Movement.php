@@ -17,7 +17,8 @@ class Movement extends Model
     protected $fillable = [
         'active',
         'item_id',
-        'location_id',
+        'from_location',
+        'to_location',
         'movement_type',
         'quantity',
         'reference',

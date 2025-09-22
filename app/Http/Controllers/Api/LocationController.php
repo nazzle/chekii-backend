@@ -31,6 +31,7 @@ class LocationController extends Controller
             'active' => true,
             'name' => $request->name,
             'code' => $request->code,
+            'type' => $request->type,
             'description' => $request->description,
         ]);
 

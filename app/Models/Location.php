@@ -43,6 +43,19 @@ class Location extends Model
      */
     public function movements()
     {
-        return $this->hasMany(Movement::class);
+        return $this->hasMany(Movement::class, 'from_location')
+            ->orWhere('to_location');
+    }
+
+    // Movements starting from this location
+    public function movementsFrom()
+    {
+        return $this->hasMany(Movement::class, 'from_location_id');
+    }
+
+    // Movements ending at this location
+    public function movementsTo()
+    {
+        return $this->hasMany(Movement::class, 'to_location_id');
     }
 }
