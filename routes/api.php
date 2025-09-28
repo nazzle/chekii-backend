@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\MovementController;
 use App\Http\Controllers\Api\InventoryController;
+use App\Http\Controllers\Api\ReferenceDataController;
 use App\Models\User;
 use Illuminate\Support\Str;
 
@@ -108,6 +109,38 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/suppliers/{id}', [SupplierController::class, 'getSupplierById']);
     Route::put('/suppliers/{id}', [SupplierController::class, 'updateSupplier']);
     Route::patch('/suppliers/{id}/delete', [SupplierController::class, 'deleteSupplier']);
+
+    // Reference Data - Countries
+    Route::post('/countries', [ReferenceDataController::class, 'createCountry']);
+    Route::get('/countries', [ReferenceDataController::class, 'getCountries']);
+    Route::get('/countries/all', [ReferenceDataController::class, 'getAllCountries']);
+    Route::get('/countries/{id}', [ReferenceDataController::class, 'getCountryById']);
+    Route::put('/countries/{id}', [ReferenceDataController::class, 'updateCountry']);
+    Route::patch('/countries/{id}/delete', [ReferenceDataController::class, 'deleteCountry']);
+
+    // Reference Data - Item Types
+    Route::post('/item-types', [ReferenceDataController::class, 'createItemType']);
+    Route::get('/item-types', [ReferenceDataController::class, 'getItemTypes']);
+    Route::get('/item-types/all', [ReferenceDataController::class, 'getAllItemTypes']);
+    Route::get('/item-types/{id}', [ReferenceDataController::class, 'getItemTypeById']);
+    Route::put('/item-types/{id}', [ReferenceDataController::class, 'updateItemType']);
+    Route::patch('/item-types/{id}/delete', [ReferenceDataController::class, 'deleteItemType']);
+
+    // Reference Data - Item Genders
+    Route::post('/item-genders', [ReferenceDataController::class, 'createItemGender']);
+    Route::get('/item-genders', [ReferenceDataController::class, 'getItemGenders']);
+    Route::get('/item-genders/all', [ReferenceDataController::class, 'getAllItemGenders']);
+    Route::get('/item-genders/{id}', [ReferenceDataController::class, 'getItemGenderById']);
+    Route::put('/item-genders/{id}', [ReferenceDataController::class, 'updateItemGender']);
+    Route::patch('/item-genders/{id}/delete', [ReferenceDataController::class, 'deleteItemGender']);
+
+    // Reference Data - Age Groups
+    Route::post('/age-groups', [ReferenceDataController::class, 'createAgeGroup']);
+    Route::get('/age-groups', [ReferenceDataController::class, 'getAgeGroups']);
+    Route::get('/age-groups/all', [ReferenceDataController::class, 'getAllAgeGroups']);
+    Route::get('/age-groups/{id}', [ReferenceDataController::class, 'getAgeGroupById']);
+    Route::put('/age-groups/{id}', [ReferenceDataController::class, 'updateAgeGroup']);
+    Route::patch('/age-groups/{id}/delete', [ReferenceDataController::class, 'deleteAgeGroup']);
 });
 
 Route::post('/reauth', function (Request $request) {
