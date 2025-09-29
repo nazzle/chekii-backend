@@ -116,6 +116,24 @@ class PermissionSeeder extends Seeder
             'VIEW_EMPLOYEE_DETAILS',
             'UPDATE_EMPLOYEE_DETAILS',
             'DELETE_EMPLOYEE_DETAILS',
+
+            // Items
+            'VIEW_ITEMS',
+            'CREATE_ITEMS',
+            'UPDATE_ITEMS',
+            'DELETE_ITEMS',
+
+            // Locations
+            'VIEW_LOCATIONS',
+            'CREATE_LOCATIONS',
+            'UPDATE_LOCATIONS',
+            'DELETE_LOCATIONS',
+
+            // Movements
+            'VIEW_MOVEMENTS',
+            'CREATE_MOVEMENTS',
+            'UPDATE_MOVEMENTS',
+            'DELETE_MOVEMENTS',
         ];
 
         foreach ($permissions as $permission) {
