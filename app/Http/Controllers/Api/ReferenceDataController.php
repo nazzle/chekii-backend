@@ -284,13 +284,22 @@ class ReferenceDataController extends Controller
             return response()->json(['message' => 'Access denied'], 403);
         }
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
             'code' => 'required|string|unique:age_groups,code|max:50',
+            'from' => 'required|integer',
+            'to' => 'required|integer',
+            'description' => 'string',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-        $ageGroup = AgeGroup::create(['active' => true, 'name' => $request->name, 'code' => $request->code]);
+        $ageGroup = AgeGroup::create([
+            'active' => true,
+            'name' => $request->name,
+            'code' => $request->code,
+            'from' => $request->from,
+            'to' => $request->to,
+            'description' => $request->description
+        ]);
         return response()->json(['age_group' => $ageGroup, 'status' => true, 'code' => 200], 201);
     }
 
@@ -333,8 +342,10 @@ class ReferenceDataController extends Controller
             return response()->json(['message' => 'Age group not found'], 404);
         }
         $validator = Validator::make($request->all(), [
-            'name' => 'sometimes|required|string|max:255',
             'code' => 'sometimes|required|string|unique:age_groups,code,' . $id . '|max:50',
+            'from' => 'required|integer',
+            'to' => 'required|integer',
+            'description' => 'string',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
