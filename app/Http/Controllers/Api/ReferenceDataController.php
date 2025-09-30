@@ -162,12 +162,18 @@ class ReferenceDataController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|required|string|max:255',
             'code' => 'sometimes|required|string|unique:item_types,code,' . $id . '|max:50',
+            'description' => 'string'
         ]);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
         $itemType->update($validator->validated());
-        return response()->json(['item_type' => $itemType, 'status' => true, 'code' => 200, 'message' => 'Item type updated successfully']);
+        return response()->json([
+            'item_type' => $itemType,
+            'status' => true,
+            'code' => 200,
+            'message' => 'Item type updated successfully'
+        ]);
     }
 
     public function deleteItemType(Request $request, $id)
@@ -193,11 +199,17 @@ class ReferenceDataController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'code' => 'required|string|unique:item_genders,code|max:50',
+            'description' => 'string'
         ]);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-        $itemGender = ItemGender::create(['active' => true, 'name' => $request->name, 'code' => $request->code]);
+        $itemGender = ItemGender::create([
+            'active' => true,
+            'name' => $request->name,
+            'code' => $request->code,
+            'description' => $request->description,
+        ]);
         return response()->json(['item_gender' => $itemGender, 'status' => true, 'code' => 200], 201);
     }
 
@@ -242,6 +254,7 @@ class ReferenceDataController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|required|string|max:255',
             'code' => 'sometimes|required|string|unique:item_genders,code,' . $id . '|max:50',
+            'description' => 'string'
         ]);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
