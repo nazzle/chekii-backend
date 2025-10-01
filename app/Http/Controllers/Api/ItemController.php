@@ -22,11 +22,15 @@ class ItemController extends Controller
             'barcode' => 'nullable|string|unique:items,barcode',
             'item_code' => 'required|string|unique:items,item_code',
             'description' => 'nullable|string',
+            'item_image' => 'nullable|string',
             'buying_price' => 'required|numeric|min:0',
             'selling_price' => 'required|numeric|min:0',
             'gender' => 'nullable|in:male,female,unisex',
-            'age' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
+            'supplier_id' => 'required|exists:suppliers,id',
+            'type_id' => 'required|exists:item_types,id',
+            'age_id' => 'required|exists:age_groups,id',
+            'country_id' => 'required|exists:countries,id',
         ]);
 
         if ($validator->fails()) {
@@ -38,11 +42,15 @@ class ItemController extends Controller
             'barcode' => $request->barcode,
             'item_code' => $request->item_code,
             'description' => $request->description,
+            'item_image' => $request->description,
             'buying_price' => $request->buying_price,
             'selling_price' => $request->selling_price,
             'gender' => $request->gender,
-            'age' => $request->age,
             'category_id' => $request->category_id,
+            'supplier_id' => $request->supplier_id,
+            'type_id' => $request->type_id,
+            'age_id' => $request->age_id,
+            'country_id' => $request->country_id,
         ]);
 
         // Load category relationship for response
@@ -131,8 +139,11 @@ class ItemController extends Controller
             'buying_price' => 'sometimes|required|numeric|min:0',
             'selling_price' => 'sometimes|required|numeric|min:0',
             'gender' => 'nullable|in:male,female,unisex',
-            'age' => 'nullable|string',
-            'category_id' => 'sometimes|required|exists:categories,id',
+            'category_id' => 'required|exists:categories,id',
+            'supplier_id' => 'required|exists:suppliers,id',
+            'type_id' => 'required|exists:item_types,id',
+            'age_id' => 'required|exists:age_groups,id',
+            'country_id' => 'required|exists:countries,id',
         ]);
 
         if ($validator->fails()) {

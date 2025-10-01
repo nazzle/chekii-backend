@@ -21,9 +21,12 @@ return new class extends Migration
             $table->decimal('buying_price', 10, 2);
             $table->decimal('selling_price', 10, 2);
             $table->enum('gender', ['male', 'female', 'unisex'])->nullable();
-            $table->string('age')->nullable();
             $table->unsignedBigInteger('category_id');
             $table->foreign('category_id')->references('id')->on('categories');
+            $table->foreignId('supplier_id')->constrained('suppliers')->onDelete('cascade');
+            $table->foreignId('type_id')->constrained('item_types')->onDelete('cascade');
+            $table->foreignId('age_id')->constrained('age_groups')->onDelete('cascade');
+            $table->foreignId('country_id')->constrained('countries')->onDelete('cascade');
             $table->timestamps();
         });
     }

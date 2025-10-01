@@ -19,11 +19,15 @@ class Item extends Model
         'barcode',
         'item_code',
         'description',
+        'item_image',
         'buying_price',
         'selling_price',
         'gender',
-        'age',
         'category_id',
+        'supplier_id',
+        'type_id',
+        'age_id',
+        'country_id',
     ];
 
     /**
@@ -51,6 +55,22 @@ class Item extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Get the item type that owns this item.
+     */
+    public function itemType()
+    {
+        return $this->belongsTo(ItemType::class);
+    }
+
+    /**
+     * Get the age group that owns this item.
+     */
+    public function ageGroup()
+    {
+        return $this->belongsTo(AgeGroup::class);
     }
 
     /**

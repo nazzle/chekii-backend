@@ -20,7 +20,6 @@ class Inventory extends Model
         'quantity',
         'reorder_level',
         'location_id',
-        'supplier_id',
     ];
 
     /**
@@ -50,11 +49,4 @@ class Inventory extends Model
         return $this->belongsTo(Location::class);
     }
 
-    /**
-     * Get the supplier that owns this inventory.
-     */
-    public function supplier()
-    {
-        return $this->belongsTo(Supplier::class);
-    }
 }
