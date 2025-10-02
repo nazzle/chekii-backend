@@ -67,7 +67,7 @@ class InventoryController extends Controller
         }
 
         $perPage = $request->input('per_page', 15);
-        $inventories = Inventory::with(['item', 'location', 'supplier'])->paginate($perPage);
+        $inventories = Inventory::with(['item', 'location'])->paginate($perPage);
 
         return response()->json([
             'inventories' => $inventories,
@@ -84,7 +84,7 @@ class InventoryController extends Controller
             return response()->json(['message' => 'Access denied'], 403);
         }
 
-        $inventories = Inventory::with(['item', 'location', 'supplier'])->get();
+        $inventories = Inventory::with(['item', 'location'])->get();
 
         return response()->json([
             'inventories' => $inventories,

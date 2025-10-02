@@ -284,7 +284,7 @@ class ReferenceDataController extends Controller
             return response()->json(['message' => 'Access denied'], 403);
         }
         $validator = Validator::make($request->all(), [
-            'code' => 'required|string|unique:age_groups,code|max:50',
+            'code' => 'required|string|max:50',
             'from' => 'required|integer',
             'to' => 'required|integer',
             'description' => 'string',

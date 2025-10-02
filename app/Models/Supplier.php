@@ -33,8 +33,8 @@ class Supplier extends Model
     /**
      * Get the inventories for this supplier.
      */
-    public function inventories()
+    public function items()
     {
-        return $this->hasMany(Inventory::class);
+        return $this->hasMany(Item::class);
     }
 }
