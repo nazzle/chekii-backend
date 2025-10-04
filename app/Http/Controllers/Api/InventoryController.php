@@ -25,7 +25,6 @@ class InventoryController extends Controller
             'quantity' => 'required|integer|min:0',
             'reorder_level' => 'required|integer|min:0',
             'location_id' => 'required|exists:locations,id',
-            'supplier_id' => 'nullable|exists:suppliers,id',
         ]);
 
         if ($validator->fails()) {
@@ -46,11 +45,10 @@ class InventoryController extends Controller
             'quantity' => $request->quantity,
             'reorder_level' => $request->reorder_level,
             'location_id' => $request->location_id,
-            'supplier_id' => $request->supplier_id,
         ]);
 
         // Load relationships for response
-        $inventory->load(['item', 'location', 'supplier']);
+        $inventory->load(['item', 'location']);
 
         return response()->json([
             'inventory' => $inventory,
@@ -69,7 +67,7 @@ class InventoryController extends Controller
         }
 
         $perPage = $request->input('per_page', 15);
-        $inventories = Inventory::with(['item', 'location', 'supplier'])->paginate($perPage);
+        $inventories = Inventory::with(['item', 'location'])->paginate($perPage);
 
         return response()->json([
             'inventories' => $inventories,
@@ -86,7 +84,7 @@ class InventoryController extends Controller
             return response()->json(['message' => 'Access denied'], 403);
         }
 
-        $inventories = Inventory::with(['item', 'location', 'supplier'])->get();
+        $inventories = Inventory::with(['item', 'location'])->get();
 
         return response()->json([
             'inventories' => $inventories,
@@ -133,7 +131,6 @@ class InventoryController extends Controller
             'quantity' => 'sometimes|required|integer|min:0',
             'reorder_level' => 'sometimes|required|integer|min:0',
             'location_id' => 'sometimes|required|exists:locations,id',
-            'supplier_id' => 'nullable|exists:suppliers,id',
         ]);
 
         if ($validator->fails()) {
@@ -141,7 +138,7 @@ class InventoryController extends Controller
         }
 
         $inventory->update($validator->validated());
-        $inventory->load(['item', 'location', 'supplier']);
+        $inventory->load(['item', 'location']);
 
         return response()->json([
             'inventory' => $inventory,

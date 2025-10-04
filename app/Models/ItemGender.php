@@ -8,4 +8,28 @@ use Illuminate\Database\Eloquent\Model;
 class ItemGender extends Model
 {
     use HasFactory;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'active',
+        'code',
+        'name',
+        'description',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'active',
+        'code',
+        'name',
+        'description',
+    ];
 }

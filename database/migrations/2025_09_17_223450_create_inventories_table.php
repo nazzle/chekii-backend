@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->boolean('active')->default(true);
             $table->foreignId('item_id')->constrained('items')->onDelete('cascade');
-            $table->foreignId('supplier_id')->constrained('suppliers')->onDelete('cascade');
             $table->integer('quantity')->default(0);
             $table->integer('reorder_level')->default(0);
             $table->unsignedBigInteger('location_id');
