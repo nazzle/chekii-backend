@@ -23,7 +23,7 @@ jobs:
         run: composer install --no-dev --optimize-autoloader
 
       - name: Upload files to cPanel via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.CPANEL_FTP_SERVER }}
           username: ${{ secrets.CPANEL_FTP_USER }}
