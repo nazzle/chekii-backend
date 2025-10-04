@@ -29,7 +29,7 @@ jobs:
           username: ${{ secrets.CPANEL_FTP_USER }}
           password: ${{ secrets.CPANEL_FTP_PASS }}
           local-dir: ./   # your local laravel project root
-          server-dir: /backend_app/   # cPanel directory
+          server-dir: /injini.chekiitoto.tz/   # cPanel directory
 
       - name: Run post-deploy scripts
         run: curl -X POST https://injini.chekiitoto.tz/deploy/migrate?deployment_key=${{ secrets.DEPLOY_KEY }}

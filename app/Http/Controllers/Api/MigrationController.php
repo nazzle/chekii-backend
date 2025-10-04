@@ -26,6 +26,7 @@ class MigrationController extends Controller
                 '--force' => true,
                 '--no-interaction' => true,
             ]);
+//            Artisan::call('db:seed', ['--force' => true]);
             Artisan::call('config:clear');
             Artisan::call('route:clear');
             Artisan::call('view:clear');
