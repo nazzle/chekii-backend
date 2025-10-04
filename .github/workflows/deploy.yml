@@ -32,5 +32,5 @@ jobs:
           server-dir: /injini.chekiitoto.tz/   # cPanel directory
 
       - name: Run post-deploy scripts
-        run: curl -X POST https://injini.chekiitoto.tz/deploy/migrate?deployment_key=${{ secrets.DEPLOY_KEY }}
+        run: curl -X POST https://injini.chekiitoto.tz/api/deploy/migrate?deployment_key=${{ secrets.DEPLOY_KEY }}
 
