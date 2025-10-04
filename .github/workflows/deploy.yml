@@ -31,9 +31,9 @@ jobs:
           local-dir: ./   # your local laravel project root
           server-dir: /injini.chekiitoto.tz/   # cPanel directory
 
-      - name: Run database migrations
-        run: |
-          curl -X POST \
-            -H "Deployment-Key: ${{ secrets.DEPLOYMENT_KEY }}" \
-            https://injini.chekiitoto.tz/api/deploy/migrate
+#      - name: Run database migrations
+#        run: |
+#          curl -X POST \
+#            -H "Deployment-Key: ${{ secrets.DEPLOYMENT_KEY }}" \
+#            https://injini.chekiitoto.tz/api/deploy/migrate
 
