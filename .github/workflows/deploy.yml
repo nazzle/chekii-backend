@@ -1,0 +1,36 @@
+name: Deploy ChekiiToto Back-End App to cPanel
+
+on:
+  push:
+    branches:
+      - main   # or master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+          extensions: mbstring, bcmath, intl, mysql
+
+      - name: Install dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: Upload files to cPanel via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4
+        with:
+          server: ${{ secrets.CPANEL_FTP_SERVER }}
+          username: ${{ secrets.CPANEL_FTP_USER }}
+          password: ${{ secrets.CPANEL_FTP_PASS }}
+          local-dir: ./   # your local laravel project root
+          server-dir: /backend_app/   # cPanel directory
+
+      - name: Run post-deploy scripts
+        run: curl -X POST https://injini.chekiitoto.tz/deploy/migrate?deployment_key=${{ secrets.DEPLOY_KEY }}
+
