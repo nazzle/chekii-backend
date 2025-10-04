@@ -17,8 +17,8 @@ class Movement extends Model
     protected $fillable = [
         'active',
         'item_id',
-        'from_location_id',
-        'to_location_id',
+        'from_location',
+        'to_location',
         'movement_type',
         'quantity',
         'reference',
@@ -48,7 +48,7 @@ class Movement extends Model
      */
     public function fromLocation()
     {
-        return $this->belongsTo(Location::class, 'from_location_id');
+        return $this->belongsTo(Location::class, 'from_location');
     }
 
     /**
@@ -56,6 +56,6 @@ class Movement extends Model
      */
     public function toLocation()
     {
-        return $this->belongsTo(Location::class, 'to_location_id');
+        return $this->belongsTo(Location::class, 'to_location');
     }
 }

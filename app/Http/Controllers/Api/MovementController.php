@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Movement;
 use App\Models\Item;
 use App\Models\Location;
+use App\Models\Inventory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class MovementController extends Controller
 {
@@ -21,8 +23,8 @@ class MovementController extends Controller
 
         $validator = Validator::make($request->all(), [
             'item_id' => 'required|exists:items,id',
-            'from_location' => 'required|exists:locations,id',
-            'to_location' => 'required|exists:locations,id',
+            'from_location' => 'nullable|exists:locations,id',
+            'to_location' => 'nullable|exists:locations,id',
             'movement_type' => 'required|in:in,out,transfer',
             'quantity' => 'required|integer|min:1',
             'reference' => 'nullable|string|max:255',
@@ -33,26 +35,117 @@ class MovementController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $movement = Movement::create([
-            'active' => true,
-            'item_id' => $request->item_id,
-            'from_location' => $request->from_location,
-            'to_location' => $request->to_location,
-            'movement_type' => $request->movement_type,
-            'quantity' => $request->quantity,
-            'reference' => $request->reference,
-            'notes' => $request->notes,
-        ]);
+        $itemId = (int) $request->item_id;
+        $fromLocationId = $request->from_location ? (int) $request->from_location : null;
+        $toLocationId = $request->to_location ? (int) $request->to_location : null;
+        $movementType = $request->movement_type;
+        $quantity = (int) $request->quantity;
 
-        // Load relationships for response
-        $movement->load(['item', 'location']);
+        // Additional business validations
+        if ($movementType === 'in' && !$toLocationId) {
+            return response()->json(['message' => 'to_location is required for IN movement'], 422);
+        }
+        if ($movementType === 'out' && !$fromLocationId) {
+            return response()->json(['message' => 'from_location is required for OUT movement'], 422);
+        }
+        if ($movementType === 'transfer') {
+            if (!$fromLocationId || !$toLocationId) {
+                return response()->json(['message' => 'from_location and to_location are required for TRANSFER'], 422);
+            }
+            if ($fromLocationId === $toLocationId) {
+                return response()->json(['message' => 'Cannot transfer to and from the same location'], 422);
+            }
+        }
 
-        return response()->json([
-            'movement' => $movement,
-            'code' => 200,
-            'status' => true,
-            'message' => 'Movement created successfully'
-        ], 201);
+        try {
+            DB::beginTransaction();
+
+            // Helper to get inventory row with lock
+            $getInventoryLocked = function (int $itemId, int $locationId): ?Inventory {
+                return Inventory::where('item_id', $itemId)
+                    ->where('location_id', $locationId)
+                    ->lockForUpdate()
+                    ->first();
+            };
+
+            if ($movementType === 'in') {
+                // Add quantity to to_location
+                $invTo = $getInventoryLocked($itemId, $toLocationId);
+                if (!$invTo) {
+                    $invTo = Inventory::create([
+                        'active' => true,
+                        'item_id' => $itemId,
+                        'location_id' => $toLocationId,
+                        'quantity' => 0,
+                        'reorder_level' => 0,
+                    ]);
+                    // Lock the newly created row
+                    $invTo = Inventory::where('id', $invTo->id)->lockForUpdate()->first();
+                }
+                $invTo->quantity = $invTo->quantity + $quantity;
+                $invTo->save();
+            } elseif ($movementType === 'out') {
+                // Deduct quantity from from_location
+                $invFrom = $getInventoryLocked($itemId, $fromLocationId);
+                if (!$invFrom || $invFrom->quantity < $quantity) {
+                    DB::rollBack();
+                    return response()->json(['message' => 'Insufficient quantity at source location'], 400);
+                }
+                $invFrom->quantity = $invFrom->quantity - $quantity;
+                $invFrom->save();
+            } else { // transfer
+                $invFrom = $getInventoryLocked($itemId, $fromLocationId);
+                if (!$invFrom || $invFrom->quantity < $quantity) {
+                    DB::rollBack();
+                    return response()->json(['message' => 'Insufficient quantity at source location'], 400);
+                }
+                $invTo = $getInventoryLocked($itemId, $toLocationId);
+                if (!$invTo) {
+                    $invTo = Inventory::create([
+                        'active' => true,
+                        'item_id' => $itemId,
+                        'location_id' => $toLocationId,
+                        'quantity' => 0,
+                        'reorder_level' => 0,
+                    ]);
+                    $invTo = Inventory::where('id', $invTo->id)->lockForUpdate()->first();
+                }
+                $invFrom->quantity = $invFrom->quantity - $quantity;
+                $invFrom->save();
+                $invTo->quantity = $invTo->quantity + $quantity;
+                $invTo->save();
+            }
+
+            // Record movement (store *_id columns)
+            $movement = Movement::create([
+                'active' => true,
+                'item_id' => $itemId,
+                'from_location' => $fromLocationId,
+                'to_location' => $toLocationId,
+                'movement_type' => $movementType,
+                'quantity' => $quantity,
+                'reference' => $request->reference,
+                'notes' => $request->notes,
+            ]);
+
+            DB::commit();
+
+            // Load relationships for response
+            $movement->load(['item', 'fromLocation', 'toLocation']);
+
+            return response()->json([
+                'movement' => $movement,
+                'code' => 200,
+                'status' => true,
+                'message' => 'Movement created successfully'
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Failed to create movement',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     // Get paginated list of movements
@@ -64,7 +157,7 @@ class MovementController extends Controller
         }
 
         $perPage = $request->input('per_page', 15);
-        $movements = Movement::with(['item', 'location'])->paginate($perPage);
+        $movements = Movement::with(['item', 'fromLocation', 'toLocation'])->paginate($perPage);
 
         return response()->json([
             'movements' => $movements,
@@ -81,7 +174,7 @@ class MovementController extends Controller
             return response()->json(['message' => 'Access denied'], 403);
         }
 
-        $movements = Movement::with(['item', 'location'])->get();
+        $movements = Movement::with(['item', 'fromLocation', 'toLocation'])->get();
 
         return response()->json([
             'movements' => $movements,
@@ -98,7 +191,7 @@ class MovementController extends Controller
             return response()->json(['message' => 'Access denied'], 403);
         }
 
-        $movement = Movement::with(['item', 'location'])->find($id);
+        $movement = Movement::with(['item', 'fromLocation', 'toLocation'])->find($id);
         if (!$movement) {
             return response()->json(['message' => 'Movement not found'], 404);
         }
@@ -125,8 +218,8 @@ class MovementController extends Controller
 
         $validator = Validator::make($request->all(), [
             'item_id' => 'sometimes|required|exists:items,id',
-            'from_location' => 'required|exists:locations,id',
-            'to_location' => 'required|exists:locations,id',
+            'from_location' => 'nullable|exists:locations,id',
+            'to_location' => 'nullable|exists:locations,id',
             'movement_type' => 'sometimes|required|in:in,out,transfer',
             'quantity' => 'sometimes|required|integer|min:1',
             'reference' => 'nullable|string|max:255',
@@ -137,8 +230,22 @@ class MovementController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $movement->update($validator->validated());
-        $movement->load(['item', 'location']);
+        $data = $validator->validated();
+        // Map request keys to *_id columns if present
+        if (array_key_exists('from_location', $data)) {
+            $data['from_location_id'] = $data['from_location'];
+            unset($data['from_location']);
+        }
+        if (array_key_exists('to_location', $data)) {
+            $data['to_location_id'] = $data['to_location'];
+            unset($data['to_location']);
+        }
+        if (isset($data['from_location_id']) && isset($data['to_location_id']) && $data['from_location_id'] === $data['to_location_id']) {
+            return response()->json(['message' => 'Cannot transfer to and from the same location'], 422);
+        }
+
+        $movement->update($data);
+        $movement->load(['item', 'fromLocation', 'toLocation']);
 
         return response()->json([
             'movement' => $movement,

@@ -22,6 +22,8 @@ return new class extends Migration
             $table->foreign('to_location')->references('id')->on('locations');
             $table->integer('quantity')->default(0);
             $table->enum('movement_type', ['transfer', 'sale', 'purchase', 'adjustment']);
+            $table->string('reference')->nullable();
+            $table->string('notes')->nullable();
             $table->timestamps();
         });
     }

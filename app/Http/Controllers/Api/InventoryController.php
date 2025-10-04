@@ -48,7 +48,7 @@ class InventoryController extends Controller
         ]);
 
         // Load relationships for response
-        $inventory->load(['item', 'location', 'supplier']);
+        $inventory->load(['item', 'location']);
 
         return response()->json([
             'inventory' => $inventory,
@@ -138,7 +138,7 @@ class InventoryController extends Controller
         }
 
         $inventory->update($validator->validated());
-        $inventory->load(['item', 'location', 'supplier']);
+        $inventory->load(['item', 'location']);
 
         return response()->json([
             'inventory' => $inventory,
