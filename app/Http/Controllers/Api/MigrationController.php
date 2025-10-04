@@ -16,7 +16,7 @@ class MigrationController extends Controller
         }
 
         // Or check for a specific token/secret
-        if ($request->header('deployment_key') !== config('app.key')) {
+        if ($request->header('deployment_key') !== config('app.deployment_key')) {
             abort(401, 'Unauthorized');
         }
 
