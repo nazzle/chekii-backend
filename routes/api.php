@@ -14,6 +14,8 @@ use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\MovementController;
 use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\ReferenceDataController;
+use App\Http\Controllers\Api\ConfigurationController;
+use App\Http\Controllers\Api\PaymentOptionController;
 use App\Models\User;
 use Illuminate\Support\Str;
 
@@ -142,6 +144,22 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/age-groups/{id}', [ReferenceDataController::class, 'getAgeGroupById']);
     Route::put('/age-groups/{id}', [ReferenceDataController::class, 'updateAgeGroup']);
     Route::patch('/age-groups/{id}/delete', [ReferenceDataController::class, 'deleteAgeGroup']);
+
+    // Configurations
+    Route::post('/configurations', [ConfigurationController::class, 'createConfiguration']);
+    Route::get('/configurations', [ConfigurationController::class, 'getPaginatedConfigurations']);
+    Route::get('/configurations/all', [ConfigurationController::class, 'getAllConfigurations']);
+    Route::get('/configurations/{id}', [ConfigurationController::class, 'getConfigurationById']);
+    Route::put('/configurations/{id}', [ConfigurationController::class, 'updateConfiguration']);
+    Route::patch('/configurations/{id}/delete', [ConfigurationController::class, 'deleteConfiguration']);
+
+    // Payment Options
+    Route::post('/payment-options', [PaymentOptionController::class, 'createPaymentOption']);
+    Route::get('/payment-options', [PaymentOptionController::class, 'getPaginatedPaymentOptions']);
+    Route::get('/payment-options/all', [PaymentOptionController::class, 'getAllPaymentOptions']);
+    Route::get('/payment-options/{id}', [PaymentOptionController::class, 'getPaymentOptionById']);
+    Route::put('/payment-options/{id}', [PaymentOptionController::class, 'updatePaymentOption']);
+    Route::patch('/payment-options/{id}/delete', [PaymentOptionController::class, 'deletePaymentOption']);
 });
 
 Route::post('/reauth', function (Request $request) {

@@ -42,7 +42,7 @@ class ItemController extends Controller
             'barcode' => $request->barcode,
             'item_code' => $request->item_code,
             'description' => $request->description,
-            'item_image' => $request->description,
+            'item_image' => $request->item_image,
             'buying_price' => $request->buying_price,
             'selling_price' => $request->selling_price,
             'gender' => $request->gender,

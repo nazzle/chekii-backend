@@ -134,6 +134,18 @@ class PermissionSeeder extends Seeder
             'CREATE_MOVEMENTS',
             'UPDATE_MOVEMENTS',
             'DELETE_MOVEMENTS',
+
+            // Configurations
+            'VIEW_CONFIGURATIONS',
+            'CREATE_CONFIGURATIONS',
+            'UPDATE_CONFIGURATIONS',
+            'DELETE_CONFIGURATIONS',
+
+            // Payment Options
+            'VIEW_PAYMENT_OPTIONS',
+            'CREATE_PAYMENT_OPTIONS',
+            'UPDATE_PAYMENT_OPTIONS',
+            'DELETE_PAYMENT_OPTIONS',
         ];
 
         foreach ($permissions as $permission) {
