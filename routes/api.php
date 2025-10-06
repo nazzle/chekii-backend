@@ -16,6 +16,12 @@ use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\ReferenceDataController;
 use App\Http\Controllers\Api\ConfigurationController;
 use App\Http\Controllers\Api\PaymentOptionController;
+use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\TaxController;
+use App\Http\Controllers\Api\DiscountDefinitionController;
+use App\Http\Controllers\Api\DiscountController;
+use App\Http\Controllers\Api\SaleController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Models\User;
 use Illuminate\Support\Str;
 
@@ -160,6 +166,56 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/payment-options/{id}', [PaymentOptionController::class, 'getPaymentOptionById']);
     Route::put('/payment-options/{id}', [PaymentOptionController::class, 'updatePaymentOption']);
     Route::patch('/payment-options/{id}/delete', [PaymentOptionController::class, 'deletePaymentOption']);
+
+    // Customers
+    Route::post('/customers', [CustomerController::class, 'createCustomer']);
+    Route::get('/customers', [CustomerController::class, 'getPaginatedCustomers']);
+    Route::get('/customers/all', [CustomerController::class, 'getAllCustomers']);
+    Route::get('/customers/{id}', [CustomerController::class, 'getCustomerById']);
+    Route::put('/customers/{id}', [CustomerController::class, 'updateCustomer']);
+    Route::patch('/customers/{id}/delete', [CustomerController::class, 'deleteCustomer']);
+
+    // Taxes
+    Route::post('/taxes', [TaxController::class, 'createTax']);
+    Route::get('/taxes', [TaxController::class, 'getPaginatedTaxes']);
+    Route::get('/taxes/all', [TaxController::class, 'getAllTaxes']);
+    Route::get('/taxes/{id}', [TaxController::class, 'getTaxById']);
+    Route::put('/taxes/{id}', [TaxController::class, 'updateTax']);
+    Route::patch('/taxes/{id}/delete', [TaxController::class, 'deleteTax']);
+
+    // Discount Definitions
+    Route::post('/discount-definitions', [DiscountDefinitionController::class, 'createDiscountDefinition']);
+    Route::get('/discount-definitions', [DiscountDefinitionController::class, 'getPaginatedDiscountDefinitions']);
+    Route::get('/discount-definitions/all', [DiscountDefinitionController::class, 'getAllDiscountDefinitions']);
+    Route::get('/discount-definitions/{id}', [DiscountDefinitionController::class, 'getDiscountDefinitionById']);
+    Route::put('/discount-definitions/{id}', [DiscountDefinitionController::class, 'updateDiscountDefinition']);
+    Route::patch('/discount-definitions/{id}/delete', [DiscountDefinitionController::class, 'deleteDiscountDefinition']);
+
+    // Discounts
+    Route::post('/discounts', [DiscountController::class, 'createDiscount']);
+    Route::get('/discounts', [DiscountController::class, 'getPaginatedDiscounts']);
+    Route::get('/discounts/all', [DiscountController::class, 'getAllDiscounts']);
+    Route::get('/discounts/{id}', [DiscountController::class, 'getDiscountById']);
+    Route::put('/discounts/{id}', [DiscountController::class, 'updateDiscount']);
+    Route::patch('/discounts/{id}/delete', [DiscountController::class, 'deleteDiscount']);
+    Route::get('/discounts/item/{itemId}', [DiscountController::class, 'getDiscountsByItem']);
+    Route::get('/discounts/category/{categoryId}', [DiscountController::class, 'getDiscountsByCategory']);
+
+    // Sales
+    Route::post('/sales', [SaleController::class, 'createSale']);
+    Route::get('/sales', [SaleController::class, 'getPaginatedSales']);
+    Route::get('/sales/all', [SaleController::class, 'getAllSales']);
+    Route::get('/sales/{id}', [SaleController::class, 'getSaleById']);
+    Route::put('/sales/{id}', [SaleController::class, 'updateSale']);
+    Route::patch('/sales/{id}/delete', [SaleController::class, 'deleteSale']);
+
+    // Payments
+    Route::post('/payments', [PaymentController::class, 'createPayment']);
+    Route::get('/payments', [PaymentController::class, 'getPaginatedPayments']);
+    Route::get('/payments/all', [PaymentController::class, 'getAllPayments']);
+    Route::get('/payments/{id}', [PaymentController::class, 'getPaymentById']);
+    Route::put('/payments/{id}', [PaymentController::class, 'updatePayment']);
+    Route::patch('/payments/{id}/delete', [PaymentController::class, 'deletePayment']);
 });
 
 Route::post('/reauth', function (Request $request) {

@@ -17,6 +17,7 @@ class PermissionSeeder extends Seeder
     {
         $permissions = [
             //MODULES PERMISSIONS
+            'VIEW_POS_MODULE',
             'VIEW_SALES_MODULE',
             'VIEW_INVENTORY_MODULE',
             'VIEW_SUPPLIERS_MODULE',

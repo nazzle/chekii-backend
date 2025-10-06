@@ -16,6 +16,7 @@ return new class extends Migration
             $table->boolean('active')->default(true);
             $table->foreignId('definition_id')->constrained('discount_definitions');
             $table->foreignId('item_id')->constrained();
+            $table->foreignId('category_id')->constrained();
             $table->dateTime('valid_from');
             $table->dateTime('valid_to')->nullable();
             $table->timestamps();
