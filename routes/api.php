@@ -83,6 +83,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/inventories', [InventoryController::class, 'createInventory']);
     Route::get('/inventories', [InventoryController::class, 'getPaginatedInventories']);
     Route::get('/inventories/all', [InventoryController::class, 'getAllInventories']);
+    Route::get('/inventories/search', [InventoryController::class, 'searchInventoryByAttributes']);
     Route::get('/inventories/{id}', [InventoryController::class, 'getInventoryById']);
     Route::put('/inventories/{id}', [InventoryController::class, 'updateInventory']);
     Route::patch('/inventories/{id}/delete', [InventoryController::class, 'deleteInventory']);
