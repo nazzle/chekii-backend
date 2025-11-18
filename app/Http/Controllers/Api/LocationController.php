@@ -78,6 +78,19 @@ class LocationController extends Controller
         ]);
     }
 
+    // Get non-paginated list of locations for public (Non-Authenticated)
+    public function getAllLocationsPublic(Request $request)
+    {
+
+        $locations = Location::where('active', 1)->get();;
+
+        return response()->json([
+            'locations' => $locations,
+            'code' => 200,
+            'status' => true
+        ]);
+    }
+
     // Get location by ID
     public function getLocationById(Request $request, $id)
     {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Location;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -15,14 +16,26 @@ class AuthController extends Controller
         $request->validate([
             'username' => 'required',
             'password' => 'required',
+            'location_id' => 'required'
         ]);
 
         $user = User::where('username', $request->username)->first();
+        $location = Location::where('id', $request->location_id)->first();
 
         if (! $user || ! Hash::check($request->password, $user->password) || ! $user->active) {
             return response()->json(
                 [
                     'message' => 'Invalid credentials',
+                    'status' => false,
+                    'code' => config('httpStatus.BAD_REQUEST')
+                ],
+                401);
+        }
+
+        if (! $location) {
+            return response()->json(
+                [
+                    'message' => 'Selected Location is not valid',
                     'status' => false,
                     'code' => config('httpStatus.BAD_REQUEST')
                 ],
@@ -49,7 +62,8 @@ class AuthController extends Controller
             'username' => $user->username,
             'access_token' => $tokenValue,
             'expires_at' => $token->accessToken->expires_at,
-            'roles' => $user->roles
+            'roles' => $user->roles,
+            'location' => $location
         ];
         return response()->json([
             'auth_object' => $auth_object

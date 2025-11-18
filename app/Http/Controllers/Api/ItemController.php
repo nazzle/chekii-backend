@@ -134,7 +134,7 @@ class ItemController extends Controller
 
         $validator = Validator::make($request->all(), [
             'barcode' => 'nullable|string|unique:items,barcode,' . $id,
-            'item_code' => 'sometimes|string|unique:items,item_code,' . $id,
+            'item_code' => 'nullable|string|unique:items,item_code,' . $id,
             'description' => 'nullable|string',
             'buying_price' => 'sometimes|required|numeric|min:0',
             'selling_price' => 'sometimes|required|numeric|min:0',
