@@ -21,11 +21,11 @@ class SaleController extends Controller
 
         $validator = Validator::make($request->all(), [
             'customer_id' => 'nullable|exists:customers,id',
-            'sale_date' => 'required|date',
-            'total_amount' => 'required|numeric|min:0',
+//            'sale_date' => 'required|date',
+            'total' => 'required|numeric|min:0',
             'tax_amount' => 'nullable|numeric|min:0',
             'discount_amount' => 'nullable|numeric|min:0',
-            'net_amount' => 'required|numeric|min:0',
+//            'net_amount' => 'required|numeric|min:0',
             'status' => 'required|in:pending,completed,cancelled',
             'reference' => 'nullable|string|max:100',
             'items' => 'required|array|min:1',
@@ -46,13 +46,14 @@ class SaleController extends Controller
 
             $sale = Sale::create([
                 'active' => true,
+                'sale_number' => (new \App\Models\Sale)->generateSaleNumber(),
                 'customer_id' => $request->customer_id,
                 'user_id' => $request->user()->id,
-                'sale_date' => $request->sale_date,
-                'total_amount' => $request->total_amount,
+                'sale_date' => date('Y-m-d'),
+                'total_amount' => $request->total,
                 'tax_amount' => $request->tax_amount ?? 0,
                 'discount_amount' => $request->discount_amount ?? 0,
-                'net_amount' => $request->net_amount,
+//                'net_amount' => $request->net_amount,
                 'status' => $request->status,
                 'reference' => $request->reference,
             ]);

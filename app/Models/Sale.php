@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -69,5 +70,20 @@ class Sale extends Model
     public function payments()
     {
         return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * Creates sale number - unique number.
+     */
+    public function generateSaleNumber(): string
+    {
+        $date = Carbon::now()->format('Ymd');
+        // Count today's sales
+        $countToday = DB::table('sales')
+                ->whereDate('created_at', Carbon::today())
+                ->lockForUpdate()
+                ->count() + 1;
+
+        return 'SALE-' . $date . '-' . str_pad($countToday, 6, '0', STR_PAD_LEFT);
     }
 }
