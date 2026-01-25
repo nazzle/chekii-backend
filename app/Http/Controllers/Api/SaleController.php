@@ -21,6 +21,8 @@ class SaleController extends Controller
 
         $validator = Validator::make($request->all(), [
             'customer_id' => 'nullable|exists:customers,id',
+            'location_id' => 'required|integer|exists:locations,id',
+            'payment_method_id' => 'required|integer|exists:payment_options,id',
 //            'sale_date' => 'required|date',
             'total' => 'required|numeric|min:0',
             'tax_amount' => 'nullable|numeric|min:0',
@@ -46,16 +48,23 @@ class SaleController extends Controller
 
             $sale = Sale::create([
                 'active' => true,
-                'sale_number' => (new \App\Models\Sale)->generateSaleNumber(),
+                'sale_number' => Sale::generateSaleNumber(),
                 'customer_id' => $request->customer_id,
+                'location_id' => $request->location_id,
                 'user_id' => $request->user()->id,
-                'sale_date' => date('Y-m-d'),
+                'sale_date' => date('Y-m-d h:m:s'),
                 'total_amount' => $request->total,
                 'tax_amount' => $request->tax_amount ?? 0,
                 'discount_amount' => $request->discount_amount ?? 0,
-//                'net_amount' => $request->net_amount,
+                'payment_option_id' => $request->payment_method_id,
+                'subtotal' => $request->subtotal,
+                'amount_paid' => $request->amount_received,
+                'change_amount' => $request->change,
                 'status' => $request->status,
                 'reference' => $request->reference,
+                'notes' => $request->notes,
+                'original_sale_id' => $request->original_sale_id,
+                'is_refund' => $request->is_refund ?? 0,
             ]);
 
             foreach ($request->items as $itemData) {
@@ -66,7 +75,7 @@ class SaleController extends Controller
                     'quantity' => $itemData['quantity'],
                     'unit_price' => $itemData['unit_price'],
                     'total_price' => $itemData['total_price'],
-                    'tax_amount' => $itemData['tax_amount'] ?? 0,
+//                    'tax_amount' => $itemData['tax_amount'] ?? 0,
                     'discount_amount' => $itemData['discount_amount'] ?? 0,
                 ]);
             }

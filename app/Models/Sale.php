@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Sale extends Model
 {
@@ -12,7 +13,17 @@ class Sale extends Model
 
     protected $fillable = [
         'active',
+        'sale_number',
         'customer_id',
+        'location_id',
+        'payment_option_id',
+        'subtotal',
+        'amount_paid',
+        'change_amount',
+        'sale_type',
+        'notes',
+        'original_sale_id',
+        'is_refund',
         'user_id',
         'sale_date',
         'total_amount',
@@ -75,15 +86,24 @@ class Sale extends Model
     /**
      * Creates sale number - unique number.
      */
-    public function generateSaleNumber(): string
+    public static function generateSaleNumber(): string
     {
         $date = Carbon::now()->format('Ymd');
-        // Count today's sales
-        $countToday = DB::table('sales')
-                ->whereDate('created_at', Carbon::today())
-                ->lockForUpdate()
-                ->count() + 1;
 
-        return 'SALE-' . $date . '-' . str_pad($countToday, 6, '0', STR_PAD_LEFT);
+        // Count today's sales with lock to prevent race conditions
+        $countToday = DB::table('sales')
+            ->whereDate('created_at', Carbon::today())
+            ->lockForUpdate()
+            ->count() + 1;
+
+        $saleNumber = 'SALE-' . $date . '-' . str_pad($countToday, 6, '0', STR_PAD_LEFT);
+
+        // Ensure uniqueness (in case of race condition)
+        while (self::where('sale_number', $saleNumber)->exists()) {
+            $countToday++;
+            $saleNumber = 'SALE-' . $date . '-' . str_pad($countToday, 6, '0', STR_PAD_LEFT);
+        }
+
+        return $saleNumber;
     }
 }
