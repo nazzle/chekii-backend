@@ -16,10 +16,14 @@ class Payment extends Model
         'amount',
         'payment_date',
         'reference',
+        'status',
     ];
 
     protected $casts = [
         'active' => 'boolean',
+        'id' => 'integer',
+        'sale_id' => 'integer',
+        'payment_option_id' => 'integer',
         'amount' => 'decimal:2',
         'payment_date' => 'datetime',
     ];

@@ -80,6 +80,13 @@ class SaleController extends Controller
                 ]);
             }
 
+            $payments = Payment::create([
+                'sale_id' => $sale->id,
+                'payment_option_id' => $request->payment_method_id,
+                'amount' => $request->amount_received,
+                'status' => $request->status,
+            ]);
+
             DB::commit();
             $sale->load(['saleItems.item', 'customer', 'user']);
 
@@ -95,8 +102,88 @@ class SaleController extends Controller
         if (! $request->user()->hasPermission('VIEW_SALES')) {
             return response()->json(['message' => 'Access denied'], 403);
         }
+
+        $query = Sale::with(['customer', 'user', 'saleItems', 'paymentOptions']);
+
+        // Filter by location_id
+        if ($request->filled('location_id')) {
+            $query->where('location_id', $request->location_id);
+        }
+
+        // Filter by customer_id
+        if ($request->filled('customer_id')) {
+            $query->where('customer_id', $request->customer_id);
+        }
+
+        // Filter by user_id (who created the sale)
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by sale_number
+        if ($request->filled('sale_number')) {
+            $query->where('sale_number', 'like', '%' . $request->sale_number . '%');
+        }
+
+        // Filter by payment_option_id
+        if ($request->filled('payment_option_id')) {
+            $query->where('payment_option_id', $request->payment_option_id);
+        }
+
+        // Filter by is_refund
+        if ($request->filled('is_refund')) {
+            $query->where('is_refund', $request->is_refund);
+        }
+
+        // Filter by active status
+        if ($request->filled('active')) {
+            $query->where('active', $request->active);
+        }
+
+        // Filter by exact sale_date
+        if ($request->filled('sale_date')) {
+            $query->whereDate('sale_date', $request->sale_date);
+        }
+
+        // Filter by date range (from)
+        if ($request->filled('date_from')) {
+            $query->whereDate('sale_date', '>=', $request->date_from);
+        }
+
+        // Filter by date range (to)
+        if ($request->filled('date_to')) {
+            $query->whereDate('sale_date', '<=', $request->date_to);
+        }
+
+        // Filter by total_amount range (minimum)
+        if ($request->filled('min_amount')) {
+            $query->where('total_amount', '>=', $request->min_amount);
+        }
+
+        // Filter by total_amount range (maximum)
+        if ($request->filled('max_amount')) {
+            $query->where('total_amount', '<=', $request->max_amount);
+        }
+
+        // Filter by reference
+        if ($request->filled('reference')) {
+            $query->where('reference', 'like', '%' . $request->reference . '%');
+        }
+
+        // Sorting
+        $orderBy = $request->input('order_by', 'sale_date');
+        $orderDirection = $request->input('order_direction', 'desc');
+        $query->orderBy($orderBy, $orderDirection);
+
+        // Pagination
         $perPage = $request->input('per_page', 15);
-        $sales = Sale::with(['customer', 'user', 'saleItems'])->paginate($perPage);
+        $sales = $query->paginate($perPage);
+
         return response()->json(['sales' => $sales, 'status' => true, 'code' => 200]);
     }
 

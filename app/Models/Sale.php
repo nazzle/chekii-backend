@@ -36,11 +36,21 @@ class Sale extends Model
 
     protected $casts = [
         'active' => 'boolean',
+        'id' => 'integer',
+        'customer_id' => 'integer',
+        'location_id' => 'integer',
+        'payment_option_id' => 'integer',
+        'user_id' => 'integer',
+        'original_sale_id' => 'integer',
+        'is_refund' => 'integer',
         'sale_date' => 'datetime',
         'total_amount' => 'decimal:2',
         'tax_amount' => 'decimal:2',
         'discount_amount' => 'decimal:2',
         'net_amount' => 'decimal:2',
+        'subtotal' => 'decimal:2',
+        'amount_paid' => 'decimal:2',
+        'change_amount' => 'decimal:2',
     ];
 
     /**
@@ -81,6 +91,14 @@ class Sale extends Model
     public function payments()
     {
         return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * Get the payments options.
+     */
+    public function paymentOptions()
+    {
+        return $this->belongsTo(PaymentOption::class, 'payment_option_id' , 'id');
     }
 
     /**

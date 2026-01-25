@@ -22,6 +22,9 @@ class SaleItem extends Model
 
     protected $casts = [
         'active' => 'boolean',
+        'id' => 'integer',
+        'sale_id' => 'integer',
+        'item_id' => 'integer',
         'quantity' => 'integer',
         'unit_price' => 'decimal:2',
         'total_price' => 'decimal:2',
