@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\MigrationController;
+use App\Http\Controllers\Api\SeederController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\EmployeeController;
@@ -40,6 +41,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::post('/deploy/migrate', [MigrationController::class, 'runMigrations']);
+Route::match(['get', 'post'], '/deploy/seed', [SeederController::class, 'runSeeders']);
 Route::get('/locations-public', [LocationController::class, 'getAllLocationsPublic']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {

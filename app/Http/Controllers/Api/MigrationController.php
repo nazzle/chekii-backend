@@ -26,7 +26,7 @@ class MigrationController extends Controller
                 '--force' => true,
                 '--no-interaction' => true,
             ]);
-//            Artisan::call('db:seed', ['--force' => true]);
+//          Artisan::call('db:seed', ['--force' => true]);
             Artisan::call('config:clear');
             Artisan::call('route:clear');
             Artisan::call('view:clear');
@@ -39,6 +39,7 @@ class MigrationController extends Controller
                 'message' => 'Migrations completed successfully',
                 'output' => $output
             ]);
+//            return view('operation-success');
 
         } catch (\Exception $e) {
             return response()->json([

@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
-            $table->boolean('active');
+            $table->boolean('active')->default(true);
             $table->string('name')->unique();
+            $table->string('guard_name')->nullable();
             $table->timestamps();
         });
     }
@@ -26,4 +27,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('roles');
     }
-}; 
+};
