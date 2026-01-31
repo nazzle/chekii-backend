@@ -47,7 +47,8 @@ class EmployeeController extends Controller
         if (!$user->hasPermission('VIEW_EMPLOYEES_LIST')) {
             return response()->json(['message' => 'Access denied'], 403);
         }
-        $perPage = $request->input('per_page', 15);
+        $perPage = min((int) $request->input('per_page', 15), 100);
+        $perPage = max($perPage, 1);
         $employees_list = Employee::paginate($perPage);
         $employees = [
             'employeesResponse' => $employees_list,

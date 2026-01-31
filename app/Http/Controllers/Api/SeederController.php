@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Artisan;
 class SeederController extends Controller
 {
     /**
-     * Run seeders in sequence: PermissionSeeder → EmployeeSeeder → DatabaseSeeder.
+     * Run seeders in sequence: PermissionSeeder → EmployeeSeeder → LocationSeeder → DatabaseSeeder.
      * Each seeder runs only after the previous one completes successfully.
      */
     public function runSeeders(Request $request)
@@ -18,13 +18,15 @@ class SeederController extends Controller
             abort(403, 'Seeders can only be run in non-production environments');
         }
 
-        if ($request->header('deployment_key') !== config('app.deployment_key')) {
+        $deploymentKey = config('app.deployment_key');
+        if (empty($deploymentKey) || $request->header('deployment_key') !== $deploymentKey) {
             abort(401, 'Unauthorized');
         }
 
         $order = [
             \Database\Seeders\PermissionSeeder::class,
             \Database\Seeders\EmployeeSeeder::class,
+            \Database\Seeders\LocationSeeder::class,
             \Database\Seeders\DatabaseSeeder::class,
         ];
 
@@ -57,7 +59,7 @@ class SeederController extends Controller
                 'success' => false,
                 'message' => 'Seeder run failed',
                 'results' => $results,
-                'error' => $e->getMessage(),
+                'error' => config('app.debug') ? $e->getMessage() : null,
                 'failed_at' => $currentSeeder ? class_basename($currentSeeder) : null,
             ], 500);
         }

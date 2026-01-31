@@ -23,13 +23,17 @@ class SaleController extends Controller
             'customer_id' => 'nullable|exists:customers,id',
             'location_id' => 'required|integer|exists:locations,id',
             'payment_method_id' => 'required|integer|exists:payment_options,id',
-//            'sale_date' => 'required|date',
             'total' => 'required|numeric|min:0',
             'tax_amount' => 'nullable|numeric|min:0',
             'discount_amount' => 'nullable|numeric|min:0',
-//            'net_amount' => 'required|numeric|min:0',
+            'subtotal' => 'nullable|numeric|min:0',
+            'amount_received' => 'nullable|numeric|min:0',
+            'change' => 'nullable|numeric|min:0',
             'status' => 'required|in:pending,completed,cancelled',
             'reference' => 'nullable|string|max:100',
+            'notes' => 'nullable|string|max:500',
+            'original_sale_id' => 'nullable|integer',
+            'is_refund' => 'nullable|boolean',
             'items' => 'required|array|min:1',
             'items.*.item_id' => 'required|exists:items,id',
             'items.*.quantity' => 'required|integer|min:1',
@@ -57,14 +61,14 @@ class SaleController extends Controller
                 'tax_amount' => $request->tax_amount ?? 0,
                 'discount_amount' => $request->discount_amount ?? 0,
                 'payment_option_id' => $request->payment_method_id,
-                'subtotal' => $request->subtotal,
-                'amount_paid' => $request->amount_received,
-                'change_amount' => $request->change,
+                'subtotal' => $request->input('subtotal'),
+                'amount_paid' => $request->input('amount_received'),
+                'change_amount' => $request->input('change'),
                 'status' => $request->status,
-                'reference' => $request->reference,
-                'notes' => $request->notes,
-                'original_sale_id' => $request->original_sale_id,
-                'is_refund' => $request->is_refund ?? 0,
+                'reference' => $request->input('reference'),
+                'notes' => $request->input('notes'),
+                'original_sale_id' => $request->input('original_sale_id'),
+                'is_refund' => (bool) $request->input('is_refund', false),
             ]);
 
             foreach ($request->items as $itemData) {
@@ -83,7 +87,7 @@ class SaleController extends Controller
             $payments = Payment::create([
                 'sale_id' => $sale->id,
                 'payment_option_id' => $request->payment_method_id,
-                'amount' => $request->amount_received,
+                'amount' => $request->input('amount_received'),
                 'status' => $request->status,
             ]);
 
@@ -93,7 +97,8 @@ class SaleController extends Controller
             return response()->json(['sale' => $sale, 'status' => true, 'code' => 200], 201);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Failed to create sale', 'error' => $e->getMessage()], 500);
+            $message = config('app.debug') ? $e->getMessage() : 'Failed to create sale';
+            return response()->json(['message' => 'Failed to create sale', 'error' => $message], 500);
         }
     }
 
@@ -175,13 +180,17 @@ class SaleController extends Controller
             $query->where('reference', 'like', '%' . $request->reference . '%');
         }
 
-        // Sorting
-        $orderBy = $request->input('order_by', 'sale_date');
-        $orderDirection = $request->input('order_direction', 'desc');
+        // Sorting — whitelist to prevent query abuse
+        $allowedOrderBy = ['sale_date', 'total_amount', 'id', 'created_at', 'reference'];
+        $orderBy = in_array($request->input('order_by'), $allowedOrderBy)
+            ? $request->input('order_by')
+            : 'sale_date';
+        $orderDirection = strtolower($request->input('order_direction', 'desc')) === 'asc' ? 'asc' : 'desc';
         $query->orderBy($orderBy, $orderDirection);
 
-        // Pagination
-        $perPage = $request->input('per_page', 15);
+        // Pagination — cap to prevent DoS
+        $perPage = min((int) $request->input('per_page', 15), 100);
+        $perPage = max($perPage, 1);
         $sales = $query->paginate($perPage);
 
         return response()->json(['sales' => $sales, 'status' => true, 'code' => 200]);

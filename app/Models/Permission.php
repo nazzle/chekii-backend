@@ -19,10 +19,10 @@ class Permission extends Model
     ];
 
     /**
-     * Get the roles that have this permission.
+     * Get the roles that have this permission (pivot: role_permissions).
      */
     public function roles()
     {
-        return $this->belongsToMany(Role::class, 'role_permissions');
+        return $this->belongsToMany(Role::class, 'role_permissions', 'permission_id', 'role_id');
     }
-} 
+}

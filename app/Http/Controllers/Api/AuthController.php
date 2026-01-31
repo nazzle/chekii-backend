@@ -11,12 +11,36 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
+    /**
+     * Validation rules for password when setting (create/update user).
+     * Requires: min 8 chars, at least one uppercase, one number, one special character.
+     */
+    public static function passwordRules(): array
+    {
+        return [
+            'required',
+            'string',
+            'min:8',
+            'regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/',
+        ];
+    }
+
+    /**
+     * Custom validation messages for password rules.
+     */
+    public static function passwordRuleMessages(): array
+    {
+        return [
+            'password.regex' => 'The password must contain at least one uppercase letter, one number, and one special character.',
+        ];
+    }
+
     public function login(Request $request)
     {
         $request->validate([
             'username' => 'required',
             'password' => 'required',
-            'location_id' => 'required'
+            'location_id' => 'required',
         ]);
 
         $user = User::where('username', $request->username)->first();

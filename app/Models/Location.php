@@ -19,6 +19,7 @@ class Location extends Model
         'name',
         'code',
         'description',
+        'type',
     ];
 
     /**

@@ -23,7 +23,6 @@ use App\Http\Controllers\Api\DiscountDefinitionController;
 use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\Api\SaleController;
 use App\Http\Controllers\Api\PaymentController;
-use App\Models\User;
 use Illuminate\Support\Str;
 
 /*
@@ -43,7 +42,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/deploy/migrate', [MigrationController::class, 'runMigrations']);
 Route::match(['get', 'post'], '/deploy/seed', [SeederController::class, 'runSeeders']);
 Route::get('/locations-public', [LocationController::class, 'getAllLocationsPublic']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/profile', fn (Request $req) => $req->user());
@@ -222,7 +221,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/payments/{id}/delete', [PaymentController::class, 'deletePayment']);
 });
 
-Route::post('/reauth', function (Request $request) {
+// Re-auth: refresh token for already-authenticated user only (no public username/password).
+Route::post('/extend-sess', function (Request $request) {
     $user = Auth::user() ?? User::where('username', $request->username)->first();
 
     if (! $user || ! Hash::check($request->password, $user->password)) {
@@ -232,13 +232,12 @@ Route::post('/reauth', function (Request $request) {
         ], 401);
     }
 
-    // Generate and return new token
     $token = $user->createToken('api');
     $token->accessToken->expires_at = now()->addMinutes(59);
     $token->accessToken->save();
 
     $plainTextToken = $token->plainTextToken;
-    $delimiter = "|";
+    $delimiter = '|';
     $tokenValue = Str::after($plainTextToken, $delimiter);
 
     return response()->json([
@@ -247,5 +246,5 @@ Route::post('/reauth', function (Request $request) {
         'expires_at' => $token->accessToken->expires_at,
         'permissions' => $token->accessToken->abilities,
     ]);
-});
+})->middleware('auth:sanctum');
 

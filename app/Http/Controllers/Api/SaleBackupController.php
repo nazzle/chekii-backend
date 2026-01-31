@@ -182,7 +182,7 @@ class SaleBackupController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Sale failed: ' . $e->getMessage()
+                'message' => config('app.debug') ? 'Sale failed: ' . $e->getMessage() : 'Sale failed',
             ], 500);
         }
     }
@@ -302,7 +302,7 @@ class SaleBackupController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Return failed: ' . $e->getMessage()
+                'message' => config('app.debug') ? 'Return failed: ' . $e->getMessage() : 'Return failed',
             ], 500);
         }
     }
@@ -350,7 +350,7 @@ class SaleBackupController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Cancellation failed: ' . $e->getMessage()
+                'message' => config('app.debug') ? 'Cancellation failed: ' . $e->getMessage() : 'Cancellation failed',
             ], 500);
         }
     }

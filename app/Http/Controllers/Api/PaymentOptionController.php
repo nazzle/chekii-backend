@@ -31,7 +31,8 @@ class PaymentOptionController extends Controller
         if (! $request->user()->hasPermission('VIEW_PAYMENT_OPTIONS')) {
             return response()->json(['message' => 'Access denied'], 403);
         }
-        $perPage = $request->input('per_page', 15);
+        $perPage = min((int) $request->input('per_page', 15), 100);
+        $perPage = max($perPage, 1);
         return response()->json(['payment_options' => PaymentOption::paginate($perPage), 'status' => true, 'code' => 200]);
     }
 

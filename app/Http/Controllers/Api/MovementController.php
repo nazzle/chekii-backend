@@ -143,7 +143,7 @@ class MovementController extends Controller
             DB::rollBack();
             return response()->json([
                 'message' => 'Failed to create movement',
-                'error' => $e->getMessage()
+                'error' => config('app.debug') ? $e->getMessage() : null,
             ], 500);
         }
     }
@@ -156,7 +156,8 @@ class MovementController extends Controller
             return response()->json(['message' => 'Access denied'], 403);
         }
 
-        $perPage = $request->input('per_page', 15);
+        $perPage = min((int) $request->input('per_page', 15), 100);
+        $perPage = max($perPage, 1);
         $movements = Movement::with(['item', 'fromLocation', 'toLocation'])->paginate($perPage);
 
         return response()->json([

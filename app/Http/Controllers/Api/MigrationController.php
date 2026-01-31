@@ -15,8 +15,8 @@ class MigrationController extends Controller
             abort(403, 'Migrations can only be run in non-production environments');
         }
 
-        // Or check for a specific token/secret
-        if ($request->header('deployment_key') !== config('app.deployment_key')) {
+        $deploymentKey = config('app.deployment_key');
+        if (empty($deploymentKey) || $request->header('deployment_key') !== $deploymentKey) {
             abort(401, 'Unauthorized');
         }
 
@@ -45,7 +45,7 @@ class MigrationController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Migration failed',
-                'error' => $e->getMessage()
+                'error' => config('app.debug') ? $e->getMessage() : null,
             ], 500);
         }
     }
