@@ -19,6 +19,9 @@ jobs:
           php-version: 8.2
           extensions: mbstring, bcmath, intl, mysql
 
+      - name: run composer update
+        run: composer update
+
       - name: Install dependencies
         run: composer install --no-dev --optimize-autoloader
 
