@@ -51,7 +51,8 @@ class LocationController extends Controller
             return response()->json(['message' => 'Access denied'], 403);
         }
 
-        $perPage = $request->input('per_page', 15);
+        $perPage = min((int) $request->input('per_page', 15), 100);
+        $perPage = max($perPage, 1);
         $locations = Location::with(['inventories', 'movements'])->paginate($perPage);
 
         return response()->json([
@@ -70,6 +71,19 @@ class LocationController extends Controller
         }
 
         $locations = Location::with(['inventories', 'movements'])->get();
+
+        return response()->json([
+            'locations' => $locations,
+            'code' => 200,
+            'status' => true
+        ]);
+    }
+
+    // Get non-paginated list of locations for public (Non-Authenticated)
+    public function getAllLocationsPublic(Request $request)
+    {
+
+        $locations = Location::where('active', 1)->get();;
 
         return response()->json([
             'locations' => $locations,

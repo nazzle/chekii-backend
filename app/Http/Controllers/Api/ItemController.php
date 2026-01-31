@@ -42,7 +42,7 @@ class ItemController extends Controller
             'barcode' => $request->barcode,
             'item_code' => $request->item_code,
             'description' => $request->description,
-            'item_image' => $request->description,
+            'item_image' => $request->item_image,
             'buying_price' => $request->buying_price,
             'selling_price' => $request->selling_price,
             'gender' => $request->gender,
@@ -72,7 +72,8 @@ class ItemController extends Controller
             return response()->json(['message' => 'Access denied'], 403);
         }
 
-        $perPage = $request->input('per_page', 15);
+        $perPage = min((int) $request->input('per_page', 15), 100);
+        $perPage = max($perPage, 1);
         $items = Item::with(['category', 'inventory'])->paginate($perPage);
 
         return response()->json([
@@ -134,7 +135,7 @@ class ItemController extends Controller
 
         $validator = Validator::make($request->all(), [
             'barcode' => 'nullable|string|unique:items,barcode,' . $id,
-            'item_code' => 'sometimes|string|unique:items,item_code,' . $id,
+            'item_code' => 'nullable|string|unique:items,item_code,' . $id,
             'description' => 'nullable|string',
             'buying_price' => 'sometimes|required|numeric|min:0',
             'selling_price' => 'sometimes|required|numeric|min:0',

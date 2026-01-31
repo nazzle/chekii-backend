@@ -23,10 +23,10 @@ class UserController extends Controller
             'username' => 'required|string|unique:users,username',
             'employee_id' => 'required|integer',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6',
+            'password' => AuthController::passwordRules(),
             'role_ids' => 'required|array',
             'role_ids.*' => 'exists:roles,id',
-        ]);
+        ], AuthController::passwordRuleMessages());
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
@@ -63,7 +63,8 @@ class UserController extends Controller
             return response()->json(['message' => 'Access denied'], 403);
         }
 
-        $perPage = $request->input('per_page', 15);
+        $perPage = min((int) $request->input('per_page', 15), 100);
+        $perPage = max($perPage, 1);
         $users_list = User::with('roles')->paginate($perPage);
 
         $users = [
@@ -118,10 +119,10 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'username' => 'sometimes|required|string|unique:users,username,' . $id,
             'email' => 'sometimes|required|email|unique:users,email,' . $id,
-            'password' => 'sometimes|required|string|min:6',
+            'password' => array_merge(['sometimes'], AuthController::passwordRules()),
             'role_ids' => 'sometimes|required|array',
             'role_ids.*' => 'exists:roles,id',
-        ]);
+        ], AuthController::passwordRuleMessages());
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
@@ -214,7 +215,8 @@ class UserController extends Controller
         if (!$user->hasPermission('ASSIGN_ROLES')) {
             return response()->json(['message' => 'Access denied'], 403);
         }
-        $perPage = $request->input('per_page', 15);
+        $perPage = min((int) $request->input('per_page', 15), 100);
+        $perPage = max($perPage, 1);
         $roles_list = Role::with('permissions')->paginate($perPage);
         $roles = [
             'rolesResponse' => $roles_list,
@@ -243,10 +245,10 @@ class UserController extends Controller
     public function getUserProfile(Request $request)
     {
         $user = $request->user();
-        
+
         // Load user with roles and employee details
         $user->load(['roles', 'employee']);
-        
+
         return response()->json([
             'user' => $user,
             'code' => 200,

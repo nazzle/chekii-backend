@@ -11,11 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('roles', function (Blueprint $table) {
+        Schema::create('discounts', function (Blueprint $table) {
             $table->id();
             $table->boolean('active')->default(true);
-            $table->string('name')->unique();
-            $table->string('guard_name')->nullable();
+            $table->foreignId('definition_id')->constrained('discount_definitions');
+            $table->foreignId('item_id')->constrained();
+            $table->foreignId('category_id')->constrained();
+            $table->dateTime('valid_from');
+            $table->dateTime('valid_to')->nullable();
             $table->timestamps();
         });
     }
@@ -25,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('discounts');
     }
 };

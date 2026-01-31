@@ -38,7 +38,8 @@ class ReferenceDataController extends Controller
         if (! $request->user()->hasPermission('VIEW_PRODUCTS')) {
             return response()->json(['message' => 'Access denied'], 403);
         }
-        $perPage = $request->input('per_page', 15);
+        $perPage = min((int) $request->input('per_page', 15), 100);
+        $perPage = max($perPage, 1);
         return response()->json([
             'countries' => Country::paginate($perPage),
             'status' => true,
@@ -126,7 +127,8 @@ class ReferenceDataController extends Controller
         if (! $request->user()->hasPermission('VIEW_PRODUCTS')) {
             return response()->json(['message' => 'Access denied'], 403);
         }
-        $perPage = $request->input('per_page', 15);
+        $perPage = min((int) $request->input('per_page', 15), 100);
+        $perPage = max($perPage, 1);
         return response()->json(['item_types' => ItemType::paginate($perPage), 'status' => true, 'code' => 200]);
     }
 
@@ -218,7 +220,8 @@ class ReferenceDataController extends Controller
         if (! $request->user()->hasPermission('VIEW_PRODUCTS')) {
             return response()->json(['message' => 'Access denied'], 403);
         }
-        $perPage = $request->input('per_page', 15);
+        $perPage = min((int) $request->input('per_page', 15), 100);
+        $perPage = max($perPage, 1);
         return response()->json(['item_genders' => ItemGender::paginate($perPage), 'status' => true, 'code' => 200]);
     }
 
@@ -308,7 +311,8 @@ class ReferenceDataController extends Controller
         if (! $request->user()->hasPermission('VIEW_PRODUCTS')) {
             return response()->json(['message' => 'Access denied'], 403);
         }
-        $perPage = $request->input('per_page', 15);
+        $perPage = min((int) $request->input('per_page', 15), 100);
+        $perPage = max($perPage, 1);
         return response()->json(['age_groups' => AgeGroup::paginate($perPage), 'status' => true, 'code' => 200]);
     }
 

@@ -50,7 +50,8 @@ class CategoryController extends Controller
             return response()->json(['message' => 'Access denied'], 403);
         }
 
-        $perPage = $request->input('per_page', 20);
+        $perPage = min((int) $request->input('per_page', 15), 100);
+        $perPage = max($perPage, 1);
         $categories = Category::with('items')->paginate($perPage);
 
         return response()->json([

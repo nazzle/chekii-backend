@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('roles', function (Blueprint $table) {
+        Schema::create('taxes', function (Blueprint $table) {
             $table->id();
             $table->boolean('active')->default(true);
-            $table->string('name')->unique();
-            $table->string('guard_name')->nullable();
+            $table->string('name'); // VAT, GST, Sales Tax
+            $table->decimal('rate', 5, 2); // 16.00 for 16%
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('taxes');
     }
 };

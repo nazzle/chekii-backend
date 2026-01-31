@@ -3,9 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Permission;
-//use App\Models\Role;
-use Spatie\Permission\Models\Role;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Role;
 use Illuminate\Database\Seeder;
 
 class PermissionSeeder extends Seeder
@@ -17,6 +15,7 @@ class PermissionSeeder extends Seeder
     {
         $permissions = [
             //MODULES PERMISSIONS
+            'VIEW_POS_MODULE',
             'VIEW_SALES_MODULE',
             'VIEW_INVENTORY_MODULE',
             'VIEW_SUPPLIERS_MODULE',
@@ -134,18 +133,30 @@ class PermissionSeeder extends Seeder
             'CREATE_MOVEMENTS',
             'UPDATE_MOVEMENTS',
             'DELETE_MOVEMENTS',
+
+            // Configurations
+            'VIEW_CONFIGURATIONS',
+            'CREATE_CONFIGURATIONS',
+            'UPDATE_CONFIGURATIONS',
+            'DELETE_CONFIGURATIONS',
+
+            // Payment Options
+            'VIEW_PAYMENT_OPTIONS',
+            'CREATE_PAYMENT_OPTIONS',
+            'UPDATE_PAYMENT_OPTIONS',
+            'DELETE_PAYMENT_OPTIONS',
         ];
 
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
         }
 
-        // Create roles
+        // Create admin role (use App\Models\Role so we write to role_permissions table)
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
-//        $cashierRole = Role::firstOrCreate(['name' => 'cashier']);
 
-        // Assign all to admin
-        $adminRole->syncPermissions(Permission::all());
+        // Assign all permissions to admin via role_permissions pivot (explicit array for sync)
+        $permissionIds = Permission::pluck('id')->toArray();
+        $adminRole->permissions()->sync($permissionIds);
 
         // Assign limited to cashier
 //        $cashierRole->syncPermissions([

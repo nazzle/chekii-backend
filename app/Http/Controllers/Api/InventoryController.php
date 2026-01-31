@@ -66,7 +66,8 @@ class InventoryController extends Controller
             return response()->json(['message' => 'Access denied'], 403);
         }
 
-        $perPage = $request->input('per_page', 15);
+        $perPage = min((int) $request->input('per_page', 15), 100);
+        $perPage = max($perPage, 1);
         $inventories = Inventory::with(['item', 'location'])->paginate($perPage);
 
         return response()->json([
@@ -85,6 +86,51 @@ class InventoryController extends Controller
         }
 
         $inventories = Inventory::with(['item', 'location'])->get();
+
+        return response()->json([
+            'inventories' => $inventories,
+            'code' => 200,
+            'status' => true
+        ]);
+    }
+
+    // Implement inventory search
+    public function searchInventoryByAttributes(Request $request)
+    {
+        $user = $request->user();
+        if (!$user->hasPermission('VIEW_INVENTORY')) {
+            return response()->json(['message' => 'Access denied'], 403);
+        }
+
+        // Require at least keyword or location_id
+        if (!$request->filled('keyword') && !$request->filled('location_id')) {
+            return response()->json([
+                'message' => 'Please provide keyword or location_id to search',
+                'inventories' => [],
+                'code' => 400,
+                'status' => false
+            ], 400);
+        }
+
+        $query = Inventory::with(['item', 'location']);
+
+        // Filter by location if provided
+        if ($request->filled('location_id')) {
+            $query->where('location_id', $request->location_id);
+        }
+
+        // Search by keyword in item fields (REQUIRED filter - not optional)
+        if ($request->filled('keyword')) {
+            $keyword = $request->keyword;
+
+            $query->whereHas('item', function ($itemQuery) use ($keyword) {
+                $itemQuery->where('item_code', 'like', "%{$keyword}%")
+                    ->orWhere('description', 'like', "%{$keyword}%")
+                    ->orWhere('barcode', 'like', "%{$keyword}%");
+            });
+        }
+
+        $inventories = $query->get();
 
         return response()->json([
             'inventories' => $inventories,

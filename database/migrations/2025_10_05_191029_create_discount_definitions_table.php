@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('roles', function (Blueprint $table) {
+        Schema::create('discount_definitions', function (Blueprint $table) {
             $table->id();
             $table->boolean('active')->default(true);
-            $table->string('name')->unique();
-            $table->string('guard_name')->nullable();
+            $table->string('name');
+            $table->enum('type', ['fixed', 'percentage']);
+            $table->decimal('value', 10, 2);
+            $table->enum('scope', ['sale', 'item', 'category']);
             $table->timestamps();
         });
     }
@@ -25,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('discount_definitions');
     }
 };

@@ -17,6 +17,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/operation-success', function () {
+    return view('operation-success');
+});
+
 Route::middleware('web.lock')->group(function () {
     Route::get('/dashboard', fn () => view('dashboard'));
     Route::get('/admin/settings', fn () => view('settings'));

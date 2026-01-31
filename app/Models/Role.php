@@ -30,11 +30,11 @@ class Role extends Model
     ];
 
     /**
-     * Get the permissions for this role.
+     * Get the permissions for this role (pivot: role_permissions).
      */
     public function permissions()
     {
-        return $this->belongsToMany(Permission::class, 'role_permissions');
+        return $this->belongsToMany(Permission::class, 'role_permissions', 'role_id', 'permission_id');
     }
 
     /**

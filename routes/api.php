@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\MigrationController;
+use App\Http\Controllers\Api\SeederController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\EmployeeController;
@@ -14,7 +15,14 @@ use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\MovementController;
 use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\ReferenceDataController;
-use App\Models\User;
+use App\Http\Controllers\Api\ConfigurationController;
+use App\Http\Controllers\Api\PaymentOptionController;
+use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\TaxController;
+use App\Http\Controllers\Api\DiscountDefinitionController;
+use App\Http\Controllers\Api\DiscountController;
+use App\Http\Controllers\Api\SaleController;
+use App\Http\Controllers\Api\PaymentController;
 use Illuminate\Support\Str;
 
 /*
@@ -32,7 +40,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::post('/deploy/migrate', [MigrationController::class, 'runMigrations']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::match(['get', 'post'], '/deploy/seed', [SeederController::class, 'runSeeders']);
+Route::get('/locations-public', [LocationController::class, 'getAllLocationsPublic']);
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/profile', fn (Request $req) => $req->user());
@@ -75,6 +85,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/inventories', [InventoryController::class, 'createInventory']);
     Route::get('/inventories', [InventoryController::class, 'getPaginatedInventories']);
     Route::get('/inventories/all', [InventoryController::class, 'getAllInventories']);
+    Route::get('/inventories/search', [InventoryController::class, 'searchInventoryByAttributes']);
     Route::get('/inventories/{id}', [InventoryController::class, 'getInventoryById']);
     Route::put('/inventories/{id}', [InventoryController::class, 'updateInventory']);
     Route::patch('/inventories/{id}/delete', [InventoryController::class, 'deleteInventory']);
@@ -142,9 +153,76 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/age-groups/{id}', [ReferenceDataController::class, 'getAgeGroupById']);
     Route::put('/age-groups/{id}', [ReferenceDataController::class, 'updateAgeGroup']);
     Route::patch('/age-groups/{id}/delete', [ReferenceDataController::class, 'deleteAgeGroup']);
+
+    // Configurations
+    Route::post('/configurations', [ConfigurationController::class, 'createConfiguration']);
+    Route::get('/configurations', [ConfigurationController::class, 'getPaginatedConfigurations']);
+    Route::get('/configurations/all', [ConfigurationController::class, 'getAllConfigurations']);
+    Route::get('/configurations/{id}', [ConfigurationController::class, 'getConfigurationById']);
+    Route::put('/configurations/{id}', [ConfigurationController::class, 'updateConfiguration']);
+    Route::patch('/configurations/{id}/delete', [ConfigurationController::class, 'deleteConfiguration']);
+
+    // Payment Options
+    Route::post('/payment-options', [PaymentOptionController::class, 'createPaymentOption']);
+    Route::get('/payment-options', [PaymentOptionController::class, 'getPaginatedPaymentOptions']);
+    Route::get('/payment-options/all', [PaymentOptionController::class, 'getAllPaymentOptions']);
+    Route::get('/payment-options/{id}', [PaymentOptionController::class, 'getPaymentOptionById']);
+    Route::put('/payment-options/{id}', [PaymentOptionController::class, 'updatePaymentOption']);
+    Route::patch('/payment-options/{id}/delete', [PaymentOptionController::class, 'deletePaymentOption']);
+
+    // Customers
+    Route::post('/customers', [CustomerController::class, 'createCustomer']);
+    Route::get('/customers', [CustomerController::class, 'getPaginatedCustomers']);
+    Route::get('/customers/all', [CustomerController::class, 'getAllCustomers']);
+    Route::get('/customers/{id}', [CustomerController::class, 'getCustomerById']);
+    Route::put('/customers/{id}', [CustomerController::class, 'updateCustomer']);
+    Route::patch('/customers/{id}/delete', [CustomerController::class, 'deleteCustomer']);
+
+    // Taxes
+    Route::post('/taxes', [TaxController::class, 'createTax']);
+    Route::get('/taxes', [TaxController::class, 'getPaginatedTaxes']);
+    Route::get('/taxes/all', [TaxController::class, 'getAllTaxes']);
+    Route::get('/taxes/{id}', [TaxController::class, 'getTaxById']);
+    Route::put('/taxes/{id}', [TaxController::class, 'updateTax']);
+    Route::patch('/taxes/{id}/delete', [TaxController::class, 'deleteTax']);
+
+    // Discount Definitions
+    Route::post('/discount-definitions', [DiscountDefinitionController::class, 'createDiscountDefinition']);
+    Route::get('/discount-definitions', [DiscountDefinitionController::class, 'getPaginatedDiscountDefinitions']);
+    Route::get('/discount-definitions/all', [DiscountDefinitionController::class, 'getAllDiscountDefinitions']);
+    Route::get('/discount-definitions/{id}', [DiscountDefinitionController::class, 'getDiscountDefinitionById']);
+    Route::put('/discount-definitions/{id}', [DiscountDefinitionController::class, 'updateDiscountDefinition']);
+    Route::patch('/discount-definitions/{id}/delete', [DiscountDefinitionController::class, 'deleteDiscountDefinition']);
+
+    // Discounts
+    Route::post('/discounts', [DiscountController::class, 'createDiscount']);
+    Route::get('/discounts', [DiscountController::class, 'getPaginatedDiscounts']);
+    Route::get('/discounts/all', [DiscountController::class, 'getAllDiscounts']);
+    Route::get('/discounts/{id}', [DiscountController::class, 'getDiscountById']);
+    Route::put('/discounts/{id}', [DiscountController::class, 'updateDiscount']);
+    Route::patch('/discounts/{id}/delete', [DiscountController::class, 'deleteDiscount']);
+    Route::get('/discounts/item/{itemId}', [DiscountController::class, 'getDiscountsByItem']);
+    Route::get('/discounts/category/{categoryId}', [DiscountController::class, 'getDiscountsByCategory']);
+
+    // Sales
+    Route::post('/sales', [SaleController::class, 'createSale']);
+    Route::get('/sales', [SaleController::class, 'getPaginatedSales']);
+    Route::get('/sales/all', [SaleController::class, 'getAllSales']);
+    Route::get('/sales/{id}', [SaleController::class, 'getSaleById']);
+    Route::put('/sales/{id}', [SaleController::class, 'updateSale']);
+    Route::patch('/sales/{id}/delete', [SaleController::class, 'deleteSale']);
+
+    // Payments
+    Route::post('/payments', [PaymentController::class, 'createPayment']);
+    Route::get('/payments', [PaymentController::class, 'getPaginatedPayments']);
+    Route::get('/payments/all', [PaymentController::class, 'getAllPayments']);
+    Route::get('/payments/{id}', [PaymentController::class, 'getPaymentById']);
+    Route::put('/payments/{id}', [PaymentController::class, 'updatePayment']);
+    Route::patch('/payments/{id}/delete', [PaymentController::class, 'deletePayment']);
 });
 
-Route::post('/reauth', function (Request $request) {
+// Re-auth: refresh token for already-authenticated user only (no public username/password).
+Route::post('/extend-sess', function (Request $request) {
     $user = Auth::user() ?? User::where('username', $request->username)->first();
 
     if (! $user || ! Hash::check($request->password, $user->password)) {
@@ -154,13 +232,12 @@ Route::post('/reauth', function (Request $request) {
         ], 401);
     }
 
-    // Generate and return new token
     $token = $user->createToken('api');
     $token->accessToken->expires_at = now()->addMinutes(59);
     $token->accessToken->save();
 
     $plainTextToken = $token->plainTextToken;
-    $delimiter = "|";
+    $delimiter = '|';
     $tokenValue = Str::after($plainTextToken, $delimiter);
 
     return response()->json([
@@ -169,5 +246,5 @@ Route::post('/reauth', function (Request $request) {
         'expires_at' => $token->accessToken->expires_at,
         'permissions' => $token->accessToken->abilities,
     ]);
-});
+})->middleware('auth:sanctum');
 
