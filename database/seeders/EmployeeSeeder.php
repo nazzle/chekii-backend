@@ -12,7 +12,7 @@ class EmployeeSeeder extends Seeder
      */
     public function run(): void
     {
-        Employee::factory()->create([
+        Employee::create([
             'active' => true,
             'firstName' => 'Super',
             'lastName' => 'Administrator',

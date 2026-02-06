@@ -32,4 +32,4 @@ jobs:
           username: ${{ secrets.CPANEL_FTP_USER }}
           password: ${{ secrets.CPANEL_FTP_PASS }}
           local-dir: ./   # your local laravel project root
-          server-dir: /injini.chekiitoto.tz/   # cPanel directory
+          server-dir: /public_html/injini/   # cPanel directory
