@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
-            $table->boolean('active');
+            $table->boolean('active')->default(true);
             $table->string('firstName');
             $table->string('middleName')->nullable();
             $table->string('lastName');
