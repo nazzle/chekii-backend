@@ -24,8 +24,8 @@ jobs:
 
       - name: Fix index.php paths
         run: |
-          sed -i "s|\.\./vendor|../../injini_app/vendor|g" public/index.php
-          sed -i "s|\.\./bootstrap|../../injini_app/bootstrap|g" public/index.php
+          sed -i "s|\.\./vendor|../injini_app/vendor|g" public/index.php
+          sed -i "s|\.\./bootstrap|../injini_app/bootstrap|g" public/index.php
 
       - name: Upload backend files to cPanel via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -47,4 +47,4 @@ jobs:
           username: ${{ secrets.CPANEL_FTP_USER }}
           password: ${{ secrets.CPANEL_FTP_PASS }}
           local-dir: ./public/   # your local laravel project root
-          server-dir: /public_html/injini/   # cPanel directory
+          server-dir: /public_html/   # cPanel directory
