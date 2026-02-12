@@ -27,10 +27,8 @@ class ItemController extends Controller
             'selling_price' => 'required|numeric|min:0',
             'gender' => 'nullable|in:male,female,unisex',
             'category_id' => 'required|exists:categories,id',
-            'supplier_id' => 'required|exists:suppliers,id',
             'type_id' => 'required|exists:item_types,id',
             'age_id' => 'required|exists:age_groups,id',
-            'country_id' => 'required|exists:countries,id',
         ]);
 
         if ($validator->fails()) {
@@ -47,10 +45,8 @@ class ItemController extends Controller
             'selling_price' => $request->selling_price,
             'gender' => $request->gender,
             'category_id' => $request->category_id,
-            'supplier_id' => $request->supplier_id,
             'type_id' => $request->type_id,
             'age_id' => $request->age_id,
-            'country_id' => $request->country_id,
         ]);
 
         // Load category relationship for response
@@ -141,10 +137,8 @@ class ItemController extends Controller
             'selling_price' => 'sometimes|required|numeric|min:0',
             'gender' => 'nullable|in:male,female,unisex',
             'category_id' => 'required|exists:categories,id',
-            'supplier_id' => 'required|exists:suppliers,id',
             'type_id' => 'required|exists:item_types,id',
             'age_id' => 'required|exists:age_groups,id',
-            'country_id' => 'required|exists:countries,id',
         ]);
 
         if ($validator->fails()) {

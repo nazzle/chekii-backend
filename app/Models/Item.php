@@ -24,10 +24,8 @@ class Item extends Model
         'selling_price',
         'gender',
         'category_id',
-        'supplier_id',
         'type_id',
         'age_id',
-        'country_id',
     ];
 
     /**

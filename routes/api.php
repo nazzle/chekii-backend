@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\MovementController;
 use App\Http\Controllers\Api\InventoryController;
+use App\Http\Controllers\Api\InventoryRecordController;
 use App\Http\Controllers\Api\ReferenceDataController;
 use App\Http\Controllers\Api\ConfigurationController;
 use App\Http\Controllers\Api\PaymentOptionController;
@@ -89,6 +90,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/inventories/{id}', [InventoryController::class, 'getInventoryById']);
     Route::put('/inventories/{id}', [InventoryController::class, 'updateInventory']);
     Route::patch('/inventories/{id}/delete', [InventoryController::class, 'deleteInventory']);
+
+    // Inventory Records (tracking/audit)
+    Route::post('/inventory-records', [InventoryRecordController::class, 'createInventoryRecord']);
+    Route::get('/inventory-records', [InventoryRecordController::class, 'getPaginatedInventoryRecords']);
+    Route::get('/inventory-records/all', [InventoryRecordController::class, 'getAllInventoryRecords']);
+    Route::get('/inventory-records/{id}', [InventoryRecordController::class, 'getInventoryRecordById']);
+    Route::put('/inventory-records/{id}', [InventoryRecordController::class, 'updateInventoryRecord']);
+    Route::patch('/inventory-records/{id}/delete', [InventoryRecordController::class, 'deleteInventoryRecord']);
 
     // Category Management
     Route::post('/categories', [CategoryController::class, 'createCategory']);

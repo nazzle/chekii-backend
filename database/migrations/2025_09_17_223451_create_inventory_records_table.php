@@ -11,14 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('inventories', function (Blueprint $table) {
+        Schema::create('inventory_records', function (Blueprint $table) {
             $table->id();
             $table->boolean('active')->default(true);
             $table->foreignId('item_id')->constrained('items')->onDelete('cascade');
             $table->foreignId('supplier_id')->constrained('suppliers')->onDelete('cascade');
-            $table->foreignId('country_id')->constrained('countries')->onDelete('cascade');
             $table->integer('quantity')->default(0);
-            $table->integer('reorder_level')->default(0);
             $table->unsignedBigInteger('location_id');
             $table->foreign('location_id')->references('id')->on('locations');
             $table->timestamps();
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('inventories');
+        Schema::dropIfExists('inventory_records');
     }
 };

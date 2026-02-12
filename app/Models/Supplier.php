@@ -35,6 +35,6 @@ class Supplier extends Model
      */
     public function items()
     {
-        return $this->hasMany(Item::class);
+        return $this->belongsTo(Item::class);
     }
 }

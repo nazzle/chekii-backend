@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Inventory extends Model
+class InventoryRecord extends Model
 {
     use HasFactory;
 
@@ -18,10 +18,8 @@ class Inventory extends Model
         'active',
         'item_id',
         'quantity',
-        'reorder_level',
         'location_id',
         'supplier_id',
-        'country_id'
     ];
 
     /**
@@ -32,7 +30,6 @@ class Inventory extends Model
     protected $casts = [
         'active' => 'boolean',
         'quantity' => 'integer',
-        'reorder_level' => 'integer',
     ];
 
     /**
@@ -58,13 +55,4 @@ class Inventory extends Model
     {
         return $this->belongsTo(Supplier::class);
     }
-
-    /**
-     * Get the country the supply is from.
-     */
-    public function country()
-    {
-        return $this->belongsTo(Country::class);
-    }
-
 }
