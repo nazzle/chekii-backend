@@ -137,7 +137,7 @@ class InventoryController extends Controller
         }
 
         // Require at least keyword or location_id
-        if (!$request->filled('keyword') && !$request->filled('location_id')) {
+        if (!$request->filled('keyword') || !$request->filled('location_id')) {
             return response()->json([
                 'message' => 'Please provide keyword or location_id to search',
                 'inventories' => [],

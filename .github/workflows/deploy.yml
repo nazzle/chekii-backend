@@ -48,3 +48,5 @@ jobs:
           password: ${{ secrets.CPANEL_FTP_PASS }}
           local-dir: ./public/   # your local laravel project root
           server-dir: /public_html/   # cPanel directory
+          exclude: |
+            ./public/items-img/**
