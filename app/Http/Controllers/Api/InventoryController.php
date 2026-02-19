@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Inventory;
+use App\Models\InventoryRecord;
 use App\Models\Item;
 use App\Models\Location;
 use App\Models\Supplier;
@@ -25,30 +26,63 @@ class InventoryController extends Controller
             'quantity' => 'required|integer|min:0',
             'reorder_level' => 'required|integer|min:0',
             'location_id' => 'required|exists:locations,id',
+            'supplier_id' => 'required|exists:suppliers,id',
+            'country_id' => 'required|exists:countries,id',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // Check if inventory already exists for this item
-        $existingInventory = Inventory::where('item_id', $request->item_id)->first();
+        // Check if inventory already exists for this item at this location
+        $existingInventory = Inventory::where('item_id', $request->item_id)
+            ->where('location_id', $request->location_id)
+            ->first();
+
         if ($existingInventory) {
+            // Add quantity to existing inventory record
+            $existingInventory->increment('quantity', $request->quantity);
+            $existingInventory->load(['item', 'location', 'supplier', 'country']);
+
+            // Create inventory record for tracking
+            InventoryRecord::create([
+                'active' => true,
+                'item_id' => $request->item_id,
+                'supplier_id' => $request->supplier_id,
+                'quantity' => $request->quantity,
+                'location_id' => $request->location_id,
+            ]);
+
             return response()->json([
-                'message' => 'Inventory already exists for this item'
-            ], 400);
+                'inventory' => $existingInventory,
+                'code' => 200,
+                'status' => true,
+                'message' => 'Quantity added to existing inventory successfully'
+            ], 200);
         }
 
+        // Create new inventory record
         $inventory = Inventory::create([
             'active' => true,
             'item_id' => $request->item_id,
+            'supplier_id' => $request->supplier_id,
+            'country_id' => $request->country_id,
             'quantity' => $request->quantity,
             'reorder_level' => $request->reorder_level,
             'location_id' => $request->location_id,
         ]);
 
+        // Create inventory record for tracking
+        InventoryRecord::create([
+            'active' => true,
+            'item_id' => $request->item_id,
+            'supplier_id' => $request->supplier_id,
+            'quantity' => $request->quantity,
+            'location_id' => $request->location_id,
+        ]);
+
         // Load relationships for response
-        $inventory->load(['item', 'location']);
+        $inventory->load(['item', 'location', 'supplier', 'country']);
 
         return response()->json([
             'inventory' => $inventory,
@@ -103,7 +137,7 @@ class InventoryController extends Controller
         }
 
         // Require at least keyword or location_id
-        if (!$request->filled('keyword') && !$request->filled('location_id')) {
+        if (!$request->filled('keyword') || !$request->filled('location_id')) {
             return response()->json([
                 'message' => 'Please provide keyword or location_id to search',
                 'inventories' => [],
@@ -177,6 +211,8 @@ class InventoryController extends Controller
             'quantity' => 'sometimes|required|integer|min:0',
             'reorder_level' => 'sometimes|required|integer|min:0',
             'location_id' => 'sometimes|required|exists:locations,id',
+            'supplier_id' => 'sometimes|required|exists:suppliers,id',
+            'country_id' => 'sometimes|required|exists:countries,id',
         ]);
 
         if ($validator->fails()) {
