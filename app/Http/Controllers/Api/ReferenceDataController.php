@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use App\Models\Country;
 use App\Models\ItemType;
 use App\Models\ItemGender;
@@ -346,7 +347,13 @@ class ReferenceDataController extends Controller
             return response()->json(['message' => 'Age group not found'], 404);
         }
         $validator = Validator::make($request->all(), [
-            'code' => 'sometimes|required|string|unique:age_groups,code,' . $id . '|max:50',
+            'code' => [
+                'sometimes',
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('age_groups', 'code')->ignore($ageGroup->id),
+            ],
             'from' => 'required|integer',
             'to' => 'required|integer',
             'description' => 'string',
