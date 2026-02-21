@@ -145,6 +145,12 @@ class PermissionSeeder extends Seeder
             'CREATE_PAYMENT_OPTIONS',
             'UPDATE_PAYMENT_OPTIONS',
             'DELETE_PAYMENT_OPTIONS',
+
+            // Reference Data
+            'VIEW_REFERENCE_DATA',
+            'CREATE_REFERENCE_DATA',
+            'UPDATE_REFERENCE_DATA',
+            'DELETE_REFERENCE_DATA',
         ];
 
         foreach ($permissions as $permission) {
