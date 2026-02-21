@@ -352,7 +352,7 @@ class ReferenceDataController extends Controller
                 'required',
                 'string',
                 'max:50',
-                Rule::unique('age_groups', 'code')->ignore($ageGroup->id),
+//                Rule::unique('age_groups', 'code')->ignore($ageGroup->id),
             ],
             'from' => 'required|integer',
             'to' => 'required|integer',
