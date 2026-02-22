@@ -40,6 +40,25 @@ class Item extends Model
     ];
 
     /**
+     * Accessors to append to model array/JSON (e.g. for API responses).
+     *
+     * @var array<int, string>
+     */
+    protected $appends = ['item_image_url'];
+
+    /**
+     * Full URL for the item image (for frontend display).
+     * Use this in img src; null when no image is set.
+     */
+    public function getItemImageUrlAttribute(): ?string
+    {
+        if (empty($this->item_image)) {
+            return null;
+        }
+        return asset($this->item_image);
+    }
+
+    /**
      * Get the inventory for this item.
      */
     public function inventory()
