@@ -12,6 +12,26 @@ use Illuminate\Support\Str;
 
 class ItemController extends Controller
 {
+    /**
+     * Serve item image from app's public/items-img (works when public files
+     * are deployed elsewhere, e.g. production: files in /injini_app/public/items-img).
+     * Public route so <img src="..."> works without auth.
+     */
+    public function serveItemImage(string $filename)
+    {
+        // Only allow safe filenames (UUID.ext style), no path traversal
+        if (! preg_match('/^[a-zA-Z0-9_\-]+\.(jpeg|jpg|png|gif|webp)$/', $filename)) {
+            abort(404);
+        }
+        $path = public_path('items-img/' . $filename);
+        if (! File::isFile($path)) {
+            abort(404);
+        }
+        return response()->file($path, [
+            'Content-Type' => File::mimeType($path),
+        ]);
+    }
+
     // Create new item
     public function createItem(Request $request)
     {
