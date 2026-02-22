@@ -43,6 +43,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/deploy/migrate', [MigrationController::class, 'runMigrations']);
 Route::match(['get', 'post'], '/deploy/seed', [SeederController::class, 'runSeeders']);
 Route::get('/locations-public', [LocationController::class, 'getAllLocationsPublic']);
+Route::get('/item-image/{filename}', [ItemController::class, 'serveItemImage'])->where('filename', '[a-zA-Z0-9_\-]+\.(jpeg|jpg|png|gif|webp)');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);

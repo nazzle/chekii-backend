@@ -48,14 +48,16 @@ class Item extends Model
 
     /**
      * Full URL for the item image (for frontend display).
-     * Use this in img src; null when no image is set.
+     * Uses API route so production works when public files live in a different
+     * dir (e.g. /injini_app/public/items-img) than the web root (/public_html).
      */
     public function getItemImageUrlAttribute(): ?string
     {
         if (empty($this->item_image)) {
             return null;
         }
-        return asset($this->item_image);
+        $filename = basename($this->item_image);
+        return url('api/item-image/' . $filename);
     }
 
     /**
